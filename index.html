@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoldenGrad — Недвижимость премиум-класса</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+  /* =======================================================
+     GoldenGrad — настройки / КОНСТАНТЫ смотри в <script> внизу
+     ======================================================= */
+  :root{
+    --gold:#D4AF37;
+    --gold-light:#F4E3A1;
+    --white:#FFFFFF;
+    --cream:#FFFDF5;
+    --champagne:#FCE8A6;
+    --text:#1E1E1E;
+    --text-soft:#5b5a52;
+    --glass-bg:rgba(255,255,255,0.85);
+    --glass-border:rgba(212,175,55,0.25);
+    --radius:18px;
+    --wa-green:#25D366;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Montserrat',sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    background:linear-gradient(225deg,#FFFFFF 0%,#FFFDF5 45%,#FCE8A6 100%);
+    background-attachment:fixed;
+    background-size:cover;
+  }
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+  img{max-width:100%;display:block;}
+  .container{max-width:1280px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--glass-border);
+  }
+  .header-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 24px;gap:16px;flex-wrap:wrap;
+  }
+  .logo-block{display:flex;align-items:center;gap:10px;}
+  .logo-block img{height:46px;width:auto;}
+  .logo-text{
+    font-weight:800;font-size:1.3rem;letter-spacing:1px;line-height:1;
+    background:linear-gradient(90deg,#B8860B,#D4AF37,#FFF2B2,#D4AF37,#B8860B);
+    background-size:300% auto;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shimmer 4s linear infinite;
+  }
+  @keyframes shimmer{
+    0%{background-position:0% 50%;}
+    100%{background-position:300% 50%;}
+  }
+  .header-actions{display:flex;align-items:center;gap:10px;}
+  .btn-pill{
+    display:flex;align-items:center;gap:6px;
+    padding:9px 16px;border-radius:999px;font-weight:600;font-size:.85rem;
+    transition:.2s;
+  }
+  .btn-whatsapp-top{background:var(--wa-green);color:#fff;}
+  .btn-whatsapp-top:hover{filter:brightness(1.07);}
+  .btn-admin{
+    background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text);
+  }
+  .btn-admin:hover{background:#fff;}
+
+  .search-bar{
+    flex:1;min-width:200px;max-width:380px;
+    display:flex;align-items:center;gap:8px;
+    background:#fff;border:1px solid var(--glass-border);
+    border-radius:999px;padding:9px 16px;
+  }
+  .search-bar input{border:none;outline:none;width:100%;font-family:inherit;font-size:.85rem;background:transparent;}
+
+  /* ---------- DISTRICT FILTER ---------- */
+  .filters-wrap{padding:18px 0 4px;}
+  .filters{
+    display:flex;gap:10px;flex-wrap:wrap;
+  }
+  .filter-btn{
+    padding:8px 18px;border-radius:999px;font-weight:600;font-size:.82rem;
+    background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-soft);
+    transition:.2s;
+  }
+  .filter-btn.active{
+    background:linear-gradient(135deg,#D4AF37,#F4E3A1);
+    color:#1E1E1E;border-color:transparent;
+    box-shadow:0 4px 14px rgba(212,175,55,.35);
+  }
+
+  /* ---------- GRID ---------- */
+  .apartments-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
+    padding:20px 0 60px;
+  }
+  @media (max-width:1100px){.apartments-grid{grid-template-columns:repeat(3,1fr);}}
+  @media (max-width:860px){.apartments-grid{grid-template-columns:repeat(2,1fr);gap:16px;}}
+  @media (max-width:600px){.apartments-grid{grid-template-columns:repeat(2,1fr);gap:10px;}}
+
+  .apt-card{
+    background:var(--glass-bg);backdrop-filter:blur(12px);
+    border:1px solid var(--glass-border);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 8px 24px rgba(0,0,0,0.05);
+    transition:transform .2s, box-shadow .2s;
+  }
+  .apt-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.09);}
+  .apt-img-wrap{position:relative;width:100%;aspect-ratio:4/3;background:#eee;overflow:hidden;cursor:pointer;}
+  .apt-img-wrap img{width:100%;height:100%;object-fit:cover;}
+  .apt-img-count{
+    position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;
+    font-size:.68rem;padding:3px 8px;border-radius:999px;
+  }
+  .apt-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:5px;flex:1;}
+  .apt-price{font-size:1.15rem;font-weight:800;color:#8a6d0f;}
+  .apt-title{font-weight:700;font-size:.92rem;line-height:1.25;}
+  .apt-address{font-size:.78rem;color:var(--text-soft);display:flex;align-items:center;gap:4px;}
+  .apt-badge{
+    display:inline-block;align-self:flex-start;background:var(--champagne);
+    color:#6b5513;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:999px;
+  }
+  .apt-desc{
+    font-size:.76rem;color:var(--text-soft);
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    min-height:2.1em;
+  }
+  .apt-actions{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+  .btn-details,.btn-whatsapp-card{
+    width:100%;padding:8px 6px;border-radius:10px;font-weight:600;font-size:.76rem;text-align:center;
+  }
+  .btn-details{background:#fff;border:1px solid var(--glass-border);color:var(--text);}
+  .btn-whatsapp-card{background:var(--wa-green);color:#fff;}
+  @media (max-width:600px){
+    .apt-price{font-size:1rem;}
+    .apt-title{font-size:.82rem;}
+    .btn-details,.btn-whatsapp-card{font-size:.68rem;padding:7px 4px;}
+  }
+  .empty-state{grid-column:1/-1;text-align:center;padding:60px 10px;color:var(--text-soft);}
+
+  /* ---------- MODALS ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(20,15,5,.55);
+    display:flex;align-items:center;justify-content:center;z-index:200;padding:16px;
+  }
+  .modal-overlay.hidden{display:none;}
+  .modal-box{
+    background:var(--cream);border-radius:20px;max-width:900px;width:100%;
+    max-height:92vh;overflow-y:auto;position:relative;border:1px solid var(--glass-border);
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+  }
+  .modal-box.small{max-width:420px;}
+  .modal-close{
+    position:absolute;top:12px;right:14px;background:#fff;border:1px solid var(--glass-border);
+    width:34px;height:34px;border-radius:50%;font-size:1.2rem;line-height:1;z-index:5;
+  }
+  .modal-flex{display:flex;flex-wrap:wrap;}
+  .modal-gallery{flex:1 1 420px;background:#111;position:relative;min-height:320px;}
+  .modal-gallery img{width:100%;height:100%;min-height:320px;object-fit:cover;}
+  .gallery-nav{
+    position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);
+    width:34px;height:34px;border-radius:50%;font-size:1.1rem;
+  }
+  .gallery-prev{left:10px;}
+  .gallery-next{right:10px;}
+  .gallery-thumbs{position:absolute;bottom:10px;left:0;right:0;display:flex;gap:6px;justify-content:center;}
+  .gallery-thumbs span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.55);}
+  .gallery-thumbs span.active{background:var(--gold);}
+  .modal-info{flex:1 1 320px;padding:28px 26px;}
+  .modal-price{font-size:1.6rem;font-weight:800;color:#8a6d0f;margin-bottom:6px;}
+  .modal-title{margin:0 0 8px;font-size:1.25rem;}
+  .modal-address{color:var(--text-soft);font-size:.9rem;margin-bottom:10px;}
+  .modal-desc{font-size:.9rem;line-height:1.6;color:#3a392f;margin-bottom:20px;white-space:pre-wrap;}
+  .btn-whatsapp-modal{
+    background:var(--wa-green);color:#fff;padding:13px 20px;border-radius:12px;font-weight:700;
+    width:100%;font-size:.95rem;
+  }
+
+  /* ---------- ADMIN ---------- */
+  .admin-form{padding:26px;}
+  .admin-form h2{margin-top:0;}
+  .field-group{margin-bottom:14px;}
+  .field-group label{display:block;font-size:.8rem;font-weight:700;margin-bottom:5px;color:var(--text-soft);}
+  .field-group input,.field-group textarea,.field-group select{
+    width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--glass-border);
+    font-family:inherit;font-size:.88rem;background:#fff;
+  }
+  .field-group textarea{min-height:90px;resize:vertical;}
+  .btn-gold{
+    background:linear-gradient(135deg,#D4AF37,#F4E3A1);color:#1E1E1E;font-weight:700;
+    padding:11px 22px;border-radius:10px;
+  }
+  .btn-danger{background:#fde8e8;color:#b02a2a;padding:7px 12px;border-radius:8px;font-size:.78rem;font-weight:600;}
+  .admin-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .admin-tab-btn{padding:8px 16px;border-radius:999px;background:#fff;border:1px solid var(--glass-border);font-weight:600;font-size:.82rem;}
+  .admin-tab-btn.active{background:linear-gradient(135deg,#D4AF37,#F4E3A1);}
+  .admin-tab{display:none;}
+  .admin-tab.active{display:block;}
+  .district-chip{
+    display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--glass-border);
+    padding:6px 10px 6px 14px;border-radius:999px;margin:0 8px 8px 0;font-size:.82rem;
+  }
+  .district-chip button{background:none;color:#b02a2a;font-weight:800;font-size:.9rem;}
+  .admin-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
+  .admin-list-item{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    background:#fff;border:1px solid var(--glass-border);border-radius:12px;padding:10px 14px;margin-bottom:8px;
+    flex-wrap:wrap;
+  }
+  .admin-list-item .meta{font-size:.82rem;color:var(--text-soft);}
+  .admin-actions-sm{display:flex;gap:6px;}
+  .btn-sm{padding:6px 11px;border-radius:8px;font-size:.76rem;font-weight:600;background:#f1f1f1;}
+  #adminError,#loginError{color:#b02a2a;font-size:.82rem;margin-top:6px;min-height:1em;}
+  .footer-note{padding:20px 0 60px;text-align:center;font-size:.75rem;color:var(--text-soft);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-block">
+      <img src="logo.png" alt="GoldenGrad" onerror="this.style.display='none'">
+      <div>
+        <div class="logo-text">GOLDEN GRAD</div>
+      </div>
+    </div>
+    <div class="search-bar">
+      <span>🔍</span>
+      <input type="text" id="searchInput" placeholder="Поиск по адресу, названию...">
+    </div>
+    <div class="header-actions">
+      <a href="#" id="topWhatsapp" target="_blank" class="btn-pill btn-whatsapp-top">💬 WhatsApp</a>
+      <button class="btn-pill btn-admin" id="openAdminBtn">👤 Админ</button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="filters-wrap">
+    <div class="filters" id="filtersBar">
+      <button class="filter-btn active" data-id="all">Все районы</button>
+    </div>
+  </div>
+
+  <div class="apartments-grid" id="apartmentsGrid">
+    <div class="empty-state">Загрузка квартир...</div>
+  </div>
+</div>
+
+<div class="footer-note">© 2026 GoldenGrad — недвижимость премиум-класса</div>
+
+<!-- ===================== FLAT MODAL ===================== -->
+<div class="modal-overlay hidden" id="flatModal">
+  <div class="modal-box">
+    <button class="modal-close" id="closeFlatModal">×</button>
+    <div class="modal-flex">
+      <div class="modal-gallery" id="modalGallery">
+        <img id="modalMainImg" src="" alt="">
+        <button class="gallery-nav gallery-prev" id="galleryPrev">‹</button>
+        <button class="gallery-nav gallery-next" id="galleryNext">›</button>
+        <div class="gallery-thumbs" id="galleryDots"></div>
+      </div>
+      <div class="modal-info">
+        <div class="modal-price" id="modalPrice"></div>
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <div class="modal-address" id="modalAddress"></div>
+        <span class="apt-badge" id="modalBadge"></span>
+        <p class="modal-desc" id="modalDesc"></p>
+        <button class="btn-whatsapp-modal" id="modalWhatsapp">💬 Написать в WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN LOGIN MODAL ===================== -->
+<div class="modal-overlay hidden" id="loginModal">
+  <div class="modal-box small">
+    <button class="modal-close" id="closeLoginModal">×</button>
+    <div class="admin-form">
+      <h2>Вход в админ-панель</h2>
+      <div class="field-group">
+        <label>Пароль</label>
+        <input type="password" id="adminPasswordInput" placeholder="Введите пароль">
+      </div>
+      <button class="btn-gold" id="loginSubmitBtn">Войти</button>
+      <div id="loginError"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN PANEL MODAL ===================== -->
+<div class="modal-overlay hidden" id="adminModal">
+  <div class="modal-box" style="max-width:760px;">
+    <button class="modal-close" id="closeAdminModal">×</button>
+    <div class="admin-form">
+      <h2>Админ-панель GoldenGrad</h2>
+      <div class="admin-tabs">
+        <button class="admin-tab-btn active" data-tab="tabDistricts">Районы</button>
+        <button class="admin-tab-btn" data-tab="tabAddFlat">Добавить квартиру</button>
+        <button class="admin-tab-btn" data-tab="tabList">Список объявлений</button>
+      </div>
+
+      <div class="admin-tab active" id="tabDistricts">
+        <div class="admin-row">
+          <input type="text" id="newDistrictInput" placeholder="Название района" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--glass-border);">
+          <button class="btn-gold" id="addDistrictBtn">Добавить</button>
+        </div>
+        <div id="districtChipsWrap"></div>
+      </div>
+
+      <div class="admin-tab" id="tabAddFlat">
+        <form id="addFlatForm">
+          <div class="field-group">
+            <label>Район</label>
+            <select id="flatDistrictSelect" required></select>
+          </div>
+          <div class="field-group">
+            <label>Заголовок (например: «2-комн. квартира, 64 м²»)</label>
+            <input type="text" id="flatTitleInput" required>
+          </div>
+          <div class="field-group">
+            <label>Цена ($)</label>
+            <input type="number" id="flatPriceInput" required min="0">
+          </div>
+          <div class="field-group">
+            <label>Адрес</label>
+            <input type="text" id="flatAddressInput" required>
+          </div>
+          <div class="field-group">
+            <label>Описание</label>
+            <textarea id="flatDescInput"></textarea>
+          </div>
+          <div class="field-group">
+            <label>Фотографии (можно выбрать несколько)</label>
+            <input type="file" id="flatPhotosInput" accept="image/*" multiple>
+          </div>
+          <button type="submit" class="btn-gold">Сохранить квартиру</button>
+          <div id="adminError"></div>
+        </form>
+      </div>
+
+      <div class="admin-tab" id="tabList">
+        <div id="adminFlatsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== EDIT FLAT MODAL ===================== -->
+<div class="modal-overlay hidden" id="editFlatModal">
+  <div class="modal-box small">
+    <button class="modal-close" id="closeEditFlatModal">×</button>
+    <div class="admin-form">
+      <h2>Редактировать квартиру</h2>
+      <div class="field-group">
+        <label>Район</label>
+        <select id="editFlatDistrictSelect"></select>
+      </div>
+      <div class="field-group">
+        <label>Заголовок</label>
+        <input type="text" id="editFlatTitleInput">
+      </div>
+      <div class="field-group">
+        <label>Цена ($)</label>
+        <input type="number" id="editFlatPriceInput" min="0">
+      </div>
+      <div class="field-group">
+        <label>Адрес</label>
+        <input type="text" id="editFlatAddressInput">
+      </div>
+      <div class="field-group">
+        <label>Описание</label>
+        <textarea id="editFlatDescInput"></textarea>
+      </div>
+      <div class="field-group">
+        <label>Добавить ещё фото (необязательно)</label>
+        <input type="file" id="editFlatPhotosInput" accept="image/*" multiple>
+      </div>
+      <button class="btn-gold" id="saveEditFlatBtn">Сохранить изменения</button>
+      <div id="editFlatError" style="color:#b02a2a;font-size:.82rem;margin-top:6px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   КОНСТАНТЫ — ВСТАВЬТЕ СВОИ ЗНАЧЕНИЯ ПЕРЕД ДЕПЛОЕМ
+   ========================================================================= */
+const SUPABASE_URL = "https://imzfrxwloynognwnccbl.supabase.co/rest/v1/";
+const SUPABASE_ANON_KEY = "sb_publishable_o3pZkF9xk9cpP8iXsUQ6Tw_TrCF9ANq";
+const WHATSAPP_PHONE = "77785948630";      // без +, без пробелов, с кодом страны
+const ADMIN_PASSWORD = "Solnce12345";       // поменяйте перед деплоем
+const STORAGE_BUCKET = "flat-photos";
+/* ========================================================================= */
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let districts = [];
+let flats = [];
+let currentDistrict = 'all';
+let searchQuery = '';
+let currentGalleryIndex = 0;
+let currentGalleryFlat = null;
+let isAdmin = false;
+
+// ---------- Utility ----------
+function formatPrice(n){
+  return Number(n).toLocaleString('ru-RU');
+}
+function getFlatLink(id){
+  return location.origin + location.pathname + '#flat-' + id;
+}
+function waLink(flat){
+  const text = `Здравствуйте! Пишу с сайта GoldenGrad. Интересует эта квартира: ${getFlatLink(flat.id)}`;
+  return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
+}
+function districtName(id){
+  const d = districts.find(x => String(x.id) === String(id));
+  return d ? d.name : '';
+}
+
+// ---------- Data loading ----------
+async function loadData(){
+  const [{data: dData, error: dErr}, {data: fData, error: fErr}] = await Promise.all([
+    supabase.from('districts').select('*').order('name'),
+    supabase.from('flats').select('*').order('created_at', {ascending:false})
+  ]);
+  if (dErr) console.error(dErr);
+  if (fErr) console.error(fErr);
+  districts = dData || [];
+  flats = fData || [];
+  renderFilters();
+  renderGrid();
+  populateDistrictSelects();
+  if (isAdmin){ renderDistrictChips(); renderAdminFlatsList(); }
+  handleHashOnLoad();
+}
+
+// ---------- Filters ----------
+function renderFilters(){
+  const bar = document.getElementById('filtersBar');
+  bar.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn' + (currentDistrict === 'all' ? ' active' : '');
+  allBtn.textContent = 'Все районы';
+  allBtn.dataset.id = 'all';
+  allBtn.onclick = () => { currentDistrict = 'all'; renderFilters(); renderGrid(); };
+  bar.appendChild(allBtn);
+  districts.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (String(currentDistrict) === String(d.id) ? ' active' : '');
+    btn.textContent = d.name;
+    btn.dataset.id = d.id;
+    btn.onclick = () => { currentDistrict = d.id; renderFilters(); renderGrid(); };
+    bar.appendChild(btn);
+  });
+}
+
+// ---------- Grid ----------
+function renderGrid(){
+  const grid = document.getElementById('apartmentsGrid');
+  grid.innerHTML = '';
+  let list = flats.filter(f => currentDistrict === 'all' || String(f.district_id) === String(currentDistrict));
+  if (searchQuery.trim()){
+    const q = searchQuery.trim().toLowerCase();
+    list = list.filter(f => (f.title||'').toLowerCase().includes(q) || (f.address||'').toLowerCase().includes(q));
+  }
+  if (!list.length){
+    grid.innerHTML = '<div class="empty-state">Квартиры не найдены</div>';
+    return;
+  }
+  list.forEach(f => grid.appendChild(buildCard(f)));
+}
+
+function buildCard(flat){
+  const photos = flat.photos || [];
+  const card = document.createElement('div');
+  card.className = 'apt-card';
+  card.id = 'flat-card-' + flat.id;
+  card.innerHTML = `
+    <div class="apt-img-wrap" data-id="${flat.id}">
+      <img src="${photos[0] || ''}" alt="${escapeHtml(flat.title)}" loading="lazy">
+      ${photos.length > 1 ? `<span class="apt-img-count">📷 ${photos.length}</span>` : ''}
+    </div>
+    <div class="apt-body">
+      <div class="apt-price">$ ${formatPrice(flat.price)}</div>
+      <div class="apt-title">${escapeHtml(flat.title)}</div>
+      <div class="apt-address">📍 ${escapeHtml(flat.address)}</div>
+      <span class="apt-badge">${escapeHtml(districtName(flat.district_id))}</span>
+      <div class="apt-desc">${escapeHtml(flat.description || '')}</div>
+      <div class="apt-actions">
+        <button class="btn-details" data-id="${flat.id}">Подробнее</button>
+        <a class="btn-whatsapp-card" href="${waLink(flat)}" target="_blank" style="display:block;text-decoration:none;">Написать в WhatsApp</a>
+      </div>
+    </div>
+  `;
+  card.querySelector('.apt-img-wrap').onclick = () => openFlatModal(flat.id);
+  card.querySelector('.btn-details').onclick = () => openFlatModal(flat.id);
+  return card;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+// ---------- Flat modal / gallery ----------
+function openFlatModal(id, pushHash = true){
+  const flat = flats.find(f => String(f.id) === String(id));
+  if (!flat) return;
+  currentGalleryFlat = flat;
+  currentGalleryIndex = 0;
+  document.getElementById('modalPrice').textContent = '$ ' + formatPrice(flat.price);
+  document.getElementById('modalTitle').textContent = flat.title;
+  document.getElementById('modalAddress').textContent = '📍 ' + flat.address;
+  document.getElementById('modalBadge').textContent = districtName(flat.district_id);
+  document.getElementById('modalDesc').textContent = flat.description || '';
+  document.getElementById('modalWhatsapp').onclick = () => window.open(waLink(flat), '_blank');
+  renderGalleryImage();
+  document.getElementById('flatModal').classList.remove('hidden');
+  if (pushHash) history.pushState(null, '', '#flat-' + flat.id);
+}
+function closeFlatModal(){
+  document.getElementById('flatModal').classList.add('hidden');
+  if (location.hash.startsWith('#flat-')) history.pushState(null, '', location.pathname);
+}
+function renderGalleryImage(){
+  if (!currentGalleryFlat) return;
+  const photos = currentGalleryFlat.photos || [];
+  const img = document.getElementById('modalMainImg');
+  img.src = photos[currentGalleryIndex] || '';
+  const dotsWrap = document.getElementById('galleryDots');
+  dotsWrap.innerHTML = '';
+  photos.forEach((_, i) => {
+    const dot = document.createElement('span');
+    if (i === currentGalleryIndex) dot.classList.add('active');
+    dotsWrap.appendChild(dot);
+  });
+  const hasMultiple = photos.length > 1;
+  document.getElementById('galleryPrev').style.display = hasMultiple ? 'block' : 'none';
+  document.getElementById('galleryNext').style.display = hasMultiple ? 'block' : 'none';
+}
+document.getElementById('galleryPrev').onclick = () => {
+  const photos = currentGalleryFlat.photos || [];
+  currentGalleryIndex = (currentGalleryIndex - 1 + photos.length) % photos.length;
+  renderGalleryImage();
+};
+document.getElementById('galleryNext').onclick = () => {
+  const photos = currentGalleryFlat.photos || [];
+  currentGalleryIndex = (currentGalleryIndex + 1) % photos.length;
+  renderGalleryImage();
+};
+document.getElementById('closeFlatModal').onclick = closeFlatModal;
+document.getElementById('flatModal').addEventListener('click', e => {
+  if (e.target.id === 'flatModal') closeFlatModal();
+});
+
+function handleHashOnLoad(){
+  if (location.hash.startsWith('#flat-')){
+    const id = location.hash.replace('#flat-', '');
+    openFlatModal(id, false);
+  }
+}
+window.addEventListener('hashchange', () => {
+  if (location.hash.startsWith('#flat-')){
+    const id = location.hash.replace('#flat-', '');
+    openFlatModal(id, false);
+  } else {
+    document.getElementById('flatModal').classList.add('hidden');
+  }
+});
+
+// ---------- Search ----------
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  renderGrid();
+});
+
+// ---------- Top WhatsApp button ----------
+document.getElementById('topWhatsapp').href =
+  `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Здравствуйте! Пишу с сайта GoldenGrad.')}`;
+
+// =========================================================================
+// ADMIN
+// =========================================================================
+const openAdminBtn = document.getElementById('openAdminBtn');
+const loginModal = document.getElementById('loginModal');
+const adminModal = document.getElementById('adminModal');
+
+openAdminBtn.onclick = () => {
+  if (isAdmin){
+    openAdminPanel();
+  } else {
+    loginModal.classList.remove('hidden');
+  }
+};
+document.getElementById('closeLoginModal').onclick = () => loginModal.classList.add('hidden');
+document.getElementById('loginSubmitBtn').onclick = () => {
+  const val = document.getElementById('adminPasswordInput').value;
+  if (val === ADMIN_PASSWORD){
+    isAdmin = true;
+    loginModal.classList.add('hidden');
+    document.getElementById('adminPasswordInput').value = '';
+    document.getElementById('loginError').textContent = '';
+    openAdminPanel();
+  } else {
+    document.getElementById('loginError').textContent = 'Неверный пароль';
+  }
+};
+document.getElementById('closeAdminModal').onclick = () => adminModal.classList.add('hidden');
+
+function openAdminPanel(){
+  renderDistrictChips();
+  renderAdminFlatsList();
+  populateDistrictSelects();
+  adminModal.classList.remove('hidden');
+}
+
+// Tabs
+document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+// ---------- Districts CRUD ----------
+function renderDistrictChips(){
+  const wrap = document.getElementById('districtChipsWrap');
+  wrap.innerHTML = '';
+  districts.forEach(d => {
+    const chip = document.createElement('span');
+    chip.className = 'district-chip';
+    chip.innerHTML = `${escapeHtml(d.name)} <button>×</button>`;
+    chip.querySelector('button').onclick = async () => {
+      if (!confirm(`Удалить район «${d.name}»? Квартиры этого района останутся без района.`)) return;
+      const {error} = await supabase.from('districts').delete().eq('id', d.id);
+      if (error){ alert('Ошибка удаления: ' + error.message); return; }
+      await loadData();
+    };
+    wrap.appendChild(chip);
+  });
+}
+document.getElementById('addDistrictBtn').onclick = async () => {
+  const input = document.getElementById('newDistrictInput');
+  const name = input.value.trim();
+  if (!name) return;
+  const {error} = await supabase.from('districts').insert({name});
+  if (error){ alert('Ошибка: ' + error.message); return; }
+  input.value = '';
+  await loadData();
+};
+
+function populateDistrictSelects(){
+  ['flatDistrictSelect', 'editFlatDistrictSelect'].forEach(selId => {
+    const sel = document.getElementById(selId);
+    const prev = sel.value;
+    sel.innerHTML = districts.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
+    if (prev) sel.value = prev;
+  });
+}
+
+// ---------- Upload helper ----------
+async function uploadPhotos(fileList){
+  const urls = [];
+  for (const file of fileList){
+    const path = `${Date.now()}_${Math.random().toString(36).slice(2)}_${file.name}`;
+    const {error} = await supabase.storage.from(STORAGE_BUCKET).upload(path, file);
+    if (error) throw error;
+    const {data} = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+    urls.push(data.publicUrl);
+  }
+  return urls;
+}
+
+// ---------- Add flat ----------
+document.getElementById('addFlatForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('adminError');
+  errEl.textContent = '';
+  try{
+    const files = document.getElementById('flatPhotosInput').files;
+    const photoUrls = files.length ? await uploadPhotos(files) : [];
+    const payload = {
+      district_id: document.getElementById('flatDistrictSelect').value || null,
+      title: document.getElementById('flatTitleInput').value.trim(),
+      price: Number(document.getElementById('flatPriceInput').value),
+      address: document.getElementById('flatAddressInput').value.trim(),
+      description: document.getElementById('flatDescInput').value.trim(),
+      photos: photoUrls
+    };
+    const {error} = await supabase.from('flats').insert(payload);
+    if (error) throw error;
+    document.getElementById('addFlatForm').reset();
+    await loadData();
+    document.querySelector('.admin-tab-btn[data-tab="tabList"]').click();
+  }catch(err){
+    errEl.textContent = 'Ошибка: ' + err.message;
+  }
+});
+
+// ---------- List / edit / delete flats ----------
+function renderAdminFlatsList(){
+  const wrap = document.getElementById('adminFlatsList');
+  wrap.innerHTML = '';
+  if (!flats.length){
+    wrap.innerHTML = '<p>Пока нет объявлений.</p>';
+    return;
+  }
+  flats.forEach(f => {
+    const row = document.createElement('div');
+    row.className = 'admin-list-item';
+    row.innerHTML = `
+      <div>
+        <strong>${escapeHtml(f.title)}</strong>
+        <div class="meta">$ ${formatPrice(f.price)} · ${escapeHtml(districtName(f.district_id))} · ${escapeHtml(f.address)}</div>
+      </div>
+      <div class="admin-actions-sm">
+        <button class="btn-sm" data-edit="${f.id}">Редактировать</button>
+        <button class="btn-danger" data-del="${f.id}">Удалить</button>
+      </div>
+    `;
+    row.querySelector('[data-edit]').onclick = () => openEditFlat(f.id);
+    row.querySelector('[data-del]').onclick = async () => {
+      if (!confirm(`Удалить «${f.title}»?`)) return;
+      const {error} = await supabase.from('flats').delete().eq('id', f.id);
+      if (error){ alert('Ошибка: ' + error.message); return; }
+      await loadData();
+    };
+    wrap.appendChild(row);
+  });
+}
+
+let editingFlatId = null;
+function openEditFlat(id){
+  const flat = flats.find(f => String(f.id) === String(id));
+  if (!flat) return;
+  editingFlatId = id;
+  populateDistrictSelects();
+  document.getElementById('editFlatDistrictSelect').value = flat.district_id || '';
+  document.getElementById('editFlatTitleInput').value = flat.title;
+  document.getElementById('editFlatPriceInput').value = flat.price;
+  document.getElementById('editFlatAddressInput').value = flat.address;
+  document.getElementById('editFlatDescInput').value = flat.description || '';
+  document.getElementById('editFlatError').textContent = '';
+  document.getElementById('editFlatModal').classList.remove('hidden');
+}
+document.getElementById('closeEditFlatModal').onclick = () => document.getElementById('editFlatModal').classList.add('hidden');
+document.getElementById('saveEditFlatBtn').onclick = async () => {
+  const errEl = document.getElementById('editFlatError');
+  errEl.textContent = '';
+  try{
+    const flat = flats.find(f => String(f.id) === String(editingFlatId));
+    const files = document.getElementById('editFlatPhotosInput').files;
+    let photos = flat.photos || [];
+    if (files.length){
+      const newUrls = await uploadPhotos(files);
+      photos = photos.concat(newUrls);
+    }
+    const payload = {
+      district_id: document.getElementById('editFlatDistrictSelect').value || null,
+      title: document.getElementById('editFlatTitleInput').value.trim(),
+      price: Number(document.getElementById('editFlatPriceInput').value),
+      address: document.getElementById('editFlatAddressInput').value.trim(),
+      description: document.getElementById('editFlatDescInput').value.trim(),
+      photos
+    };
+    const {error} = await supabase.from('flats').update(payload).eq('id', editingFlatId);
+    if (error) throw error;
+    document.getElementById('editFlatModal').classList.add('hidden');
+    await loadData();
+  }catch(err){
+    errEl.textContent = 'Ошибка: ' + err.message;
+  }
+};
+
+// ---------- Init ----------
+loadData();
+</script>
+</body>
+</html>
