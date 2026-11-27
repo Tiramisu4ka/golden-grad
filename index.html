@@ -116,6 +116,7 @@
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 7px;
       transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
       text-decoration: none;
@@ -145,9 +146,32 @@
     }
 
     .btn-ghost {
-      background: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.85);
       color: var(--text);
-      border: 1px solid rgba(0,0,0,0.08);
+      border: 1px solid rgba(156, 114, 20, 0.25);
+    }
+
+    .btn-filter-toggle {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid rgba(156, 114, 20, 0.3);
+      white-space: nowrap;
+    }
+
+    .btn-filter-toggle.open,
+    .btn-filter-toggle.has-active {
+      background: linear-gradient(135deg, #e7bc48, #c99722);
+      color: #1a1406;
+      border-color: transparent;
+    }
+
+    .filter-badge {
+      background: #1c1607;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 999px;
     }
 
     .filters-panel {
@@ -155,7 +179,7 @@
       backdrop-filter: blur(14px);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 14px 16px;
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
@@ -164,13 +188,21 @@
     }
 
     .search-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
+      display: flex;
+      align-items: center;
       gap: 10px;
     }
 
-    @media (max-width: 640px) {
-      .search-row { grid-template-columns: 1fr; }
+    .filters-drawer {
+      display: none;
+      flex-direction: column;
+      gap: 13px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(156, 114, 20, 0.16);
+    }
+
+    .filters-drawer.open {
+      display: flex;
     }
 
     .input, .select, .textarea {
@@ -232,13 +264,19 @@
     }
 
     .price-custom-input {
-      width: 175px;
-      padding: 7px 11px;
-      border-radius: 10px;
+      width: 240px;
+      max-width: 100%;
+      padding: 9px 12px;
+      border-radius: 11px;
       border: 1px solid rgba(156, 114, 20, 0.25);
       background: #fff;
       font-family: inherit;
-      font-size: 12px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .price-custom-input:focus {
+      border-color: var(--gold-mid);
     }
 
     .grid {
@@ -572,7 +610,7 @@
         </div>
 
         <div>
-          <label class="field-label" for="flatPriceNum">Цена числом для фильтра (в тенге/валюте)</label>
+          <label class="field-label" for="flatPriceNum">Цена числом для фильтра (необязательно)</label>
           <input id="flatPriceNum" type="number" class="input" placeholder="Например: 38000000 (если пусто — возьмётся из цены)" />
         </div>
 
@@ -635,45 +673,50 @@
       </div>
     </section>
 
-    <!-- ФИЛЬТРЫ ПОИСКА -->
+    <!-- ПОИСК И ВЫДВИЖНЫЕ ФИЛЬТРЫ -->
     <section class="filters-panel">
       <div class="search-row">
         <input id="searchInput" type="text" class="input" placeholder="Поиск по адресу, названию или описанию..." />
-        <button type="button" id="resetFiltersBtn" class="btn btn-ghost">Сбросить фильтры</button>
+        <button type="button" id="toggleFiltersBtn" class="btn btn-filter-toggle">
+          <span>Фильтры</span>
+          <span id="activeFiltersBadge" class="filter-badge" style="display:none;">0</span>
+        </button>
       </div>
 
-      <!-- Сделка -->
-      <div class="filter-group" id="dealChips">
-        <span class="filter-label">Формат:</span>
-        <button type="button" class="chip active" data-deal="all">Все</button>
-        <button type="button" class="chip" data-deal="sale">Покупка</button>
-        <button type="button" class="chip" data-deal="rent">В аренду (сдаётся)</button>
-      </div>
+      <div id="filtersDrawer" class="filters-drawer">
+        <!-- Формат сделки -->
+        <div class="filter-group" id="dealChips">
+          <span class="filter-label">Формат:</span>
+          <button type="button" class="chip active" data-deal="all">Все</button>
+          <button type="button" class="chip" data-deal="sale">Покупка</button>
+          <button type="button" class="chip" data-deal="rent">В аренду (сдаётся)</button>
+        </div>
 
-      <!-- Комнаты -->
-      <div class="filter-group" id="roomsChips">
-        <span class="filter-label">Комнаты:</span>
-        <button type="button" class="chip active" data-rooms="all">Все</button>
-        <button type="button" class="chip" data-rooms="1">1-комн.</button>
-        <button type="button" class="chip" data-rooms="2">2-комн.</button>
-        <button type="button" class="chip" data-rooms="3">3-комн.</button>
-        <button type="button" class="chip" data-rooms="4">4-комн.</button>
-      </div>
+        <!-- Комнаты -->
+        <div class="filter-group" id="roomsChips">
+          <span class="filter-label">Комнаты:</span>
+          <button type="button" class="chip active" data-rooms="all">Все</button>
+          <button type="button" class="chip" data-rooms="1">1-комн.</button>
+          <button type="button" class="chip" data-rooms="2">2-комн.</button>
+          <button type="button" class="chip" data-rooms="3">3-комн.</button>
+          <button type="button" class="chip" data-rooms="4">4-комн.</button>
+        </div>
 
-      <!-- Цена -->
-      <div class="price-filter-box" id="priceChips">
-        <span class="filter-label">Цена:</span>
-        <button type="button" class="chip active" data-price="any">Любая</button>
-        <button type="button" class="chip" data-price="to_25m">До 25 млн</button>
-        <button type="button" class="chip" data-price="to_50m">До 50 млн</button>
-        <button type="button" class="chip" data-price="from_50m">От 50 млн</button>
-        <input id="maxPriceCustom" type="number" class="price-custom-input" placeholder="До суммы (например 35000000)" />
-      </div>
+        <!-- Цена -->
+        <div class="price-filter-box">
+          <span class="filter-label">Цена до:</span>
+          <input id="maxPriceCustom" type="number" min="0" class="price-custom-input" placeholder="Введите сумму (например 35000000)" />
+        </div>
 
-      <!-- Районы -->
-      <div class="filter-group" id="districtChips">
-        <span class="filter-label">Район:</span>
-        <button type="button" class="chip active" data-district="all">Все районы</button>
+        <!-- Районы -->
+        <div class="filter-group" id="districtChips">
+          <span class="filter-label">Район:</span>
+          <button type="button" class="chip active" data-district="all">Все районы</button>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end;">
+          <button type="button" id="resetFiltersBtn" class="btn btn-ghost btn-sm">Сбросить все фильтры</button>
+        </div>
       </div>
     </section>
 
@@ -737,7 +780,6 @@
       search: "",
       deal: "all",
       rooms: "all",
-      pricePreset: "any",
       maxCustom: null,
       district: "all"
     };
@@ -770,7 +812,7 @@
     }
 
     function buildWaUrl(flat) {
-      const shareUrl = `${window.location.origin}${window.location.pathname}#flat-${flat.id}`;
+      const shareUrl = flat ? `${window.location.origin}${window.location.pathname}#flat-${flat.id}` : "";
       const text = flat
         ? `Здравствуйте! Интересует квартира: "${flat.title}" (${flat.price}). Ссылка: ${shareUrl}`
         : "Здравствуйте! Подскажите, пожалуйста, по актуальным квартирам GoldenGrad.";
@@ -778,6 +820,31 @@
     }
 
     document.getElementById("generalWaBtn").href = buildWaUrl(null);
+
+    function updateFilterButtonState() {
+      let count = 0;
+      if (filters.deal !== "all") count++;
+      if (filters.rooms !== "all") count++;
+      if (filters.maxCustom && filters.maxCustom > 0) count++;
+      if (filters.district !== "all") count++;
+
+      const btn = document.getElementById("toggleFiltersBtn");
+      const badge = document.getElementById("activeFiltersBadge");
+      btn.classList.toggle("has-active", count > 0);
+      if (count > 0) {
+        badge.textContent = String(count);
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    document.getElementById("toggleFiltersBtn").onclick = () => {
+      const drawer = document.getElementById("filtersDrawer");
+      const btn = document.getElementById("toggleFiltersBtn");
+      const isOpen = drawer.classList.toggle("open");
+      btn.classList.toggle("open", isOpen);
+    };
 
     async function loadData() {
       const [{ data: dData, error: dErr }, { data: fData, error: fErr }] = await Promise.all([
@@ -800,6 +867,7 @@
       }
 
       renderDistrictControls();
+      updateFilterButtonState();
       renderFlats();
       checkHashFlat();
     }
@@ -811,11 +879,11 @@
       const allBtn = document.createElement("button");
       allBtn.type = "button";
       allBtn.className = "chip" + (filters.district === "all" ? " active" : "");
-      allBtn.dataset.district = "all";
       allBtn.textContent = "Все районы";
       allBtn.onclick = () => {
         filters.district = "all";
         renderDistrictControls();
+        updateFilterButtonState();
         renderFlats();
       };
       chipsWrap.appendChild(allBtn);
@@ -823,11 +891,11 @@
       const noDistBtn = document.createElement("button");
       noDistBtn.type = "button";
       noDistBtn.className = "chip" + (filters.district === "none" ? " active" : "");
-      noDistBtn.dataset.district = "none";
       noDistBtn.textContent = "Без района";
       noDistBtn.onclick = () => {
         filters.district = "none";
         renderDistrictControls();
+        updateFilterButtonState();
         renderFlats();
       };
       chipsWrap.appendChild(noDistBtn);
@@ -836,11 +904,11 @@
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "chip" + (String(filters.district) === String(d.id) ? " active" : "");
-        btn.dataset.district = d.id;
         btn.textContent = d.name;
         btn.onclick = () => {
           filters.district = String(d.id);
           renderDistrictControls();
+          updateFilterButtonState();
           renderFlats();
         };
         chipsWrap.appendChild(btn);
@@ -898,11 +966,6 @@
         const numPrice = extractNumberFromPrice(f.price, f.price_num);
         if (filters.maxCustom && filters.maxCustom > 0) {
           if (numPrice === null || numPrice > filters.maxCustom) return false;
-        } else if (filters.pricePreset !== "any") {
-          if (numPrice === null) return false;
-          if (filters.pricePreset === "to_25m" && numPrice > 25_000_000) return false;
-          if (filters.pricePreset === "to_50m" && numPrice > 50_000_000) return false;
-          if (filters.pricePreset === "from_50m" && numPrice < 50_000_000) return false;
         }
 
         if (filters.search.trim()) {
@@ -1027,6 +1090,7 @@
       btn.onclick = () => {
         filters.deal = btn.dataset.deal;
         document.querySelectorAll("#dealChips .chip").forEach(b => b.classList.toggle("active", b === btn));
+        updateFilterButtonState();
         renderFlats();
       };
     });
@@ -1035,16 +1099,7 @@
       btn.onclick = () => {
         filters.rooms = btn.dataset.rooms;
         document.querySelectorAll("#roomsChips .chip").forEach(b => b.classList.toggle("active", b === btn));
-        renderFlats();
-      };
-    });
-
-    document.querySelectorAll("#priceChips .chip").forEach(btn => {
-      btn.onclick = () => {
-        filters.pricePreset = btn.dataset.price;
-        filters.maxCustom = null;
-        document.getElementById("maxPriceCustom").value = "";
-        document.querySelectorAll("#priceChips .chip").forEach(b => b.classList.toggle("active", b === btn));
+        updateFilterButtonState();
         renderFlats();
       };
     });
@@ -1052,12 +1107,7 @@
     document.getElementById("maxPriceCustom").oninput = e => {
       const val = Number(e.target.value);
       filters.maxCustom = val > 0 ? val : null;
-      if (filters.maxCustom) {
-        document.querySelectorAll("#priceChips .chip").forEach(b => b.classList.remove("active"));
-      } else {
-        filters.pricePreset = "any";
-        document.querySelector('#priceChips .chip[data-price="any"]').classList.add("active");
-      }
+      updateFilterButtonState();
       renderFlats();
     };
 
@@ -1065,15 +1115,14 @@
       filters.search = "";
       filters.deal = "all";
       filters.rooms = "all";
-      filters.pricePreset = "any";
       filters.maxCustom = null;
       filters.district = "all";
       document.getElementById("searchInput").value = "";
       document.getElementById("maxPriceCustom").value = "";
       document.querySelectorAll("#dealChips .chip").forEach(b => b.classList.toggle("active", b.dataset.deal === "all"));
       document.querySelectorAll("#roomsChips .chip").forEach(b => b.classList.toggle("active", b.dataset.rooms === "all"));
-      document.querySelectorAll("#priceChips .chip").forEach(b => b.classList.toggle("active", b.dataset.price === "any"));
       renderDistrictControls();
+      updateFilterButtonState();
       renderFlats();
     };
 
@@ -1216,7 +1265,6 @@
             continue;
           }
         }
-        // Резервный вариант, если бакет не настроен или недоступен
         const b64 = await fileToDataUrl(file);
         uploadedUrls.push(b64);
       }
