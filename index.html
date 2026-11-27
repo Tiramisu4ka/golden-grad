@@ -1,795 +1,1303 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GoldenGrad — Недвижимость премиум-класса</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<style>
-  /* =======================================================
-     GoldenGrad — настройки / КОНСТАНТЫ смотри в <script> внизу
-     ======================================================= */
-  :root{
-    --gold:#D4AF37;
-    --gold-light:#F4E3A1;
-    --white:#FFFFFF;
-    --cream:#FFFDF5;
-    --champagne:#FCE8A6;
-    --text:#1E1E1E;
-    --text-soft:#5b5a52;
-    --glass-bg:rgba(255,255,255,0.85);
-    --glass-border:rgba(212,175,55,0.25);
-    --radius:18px;
-    --wa-green:#25D366;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    font-family:'Montserrat',sans-serif;
-    color:var(--text);
-    min-height:100vh;
-    background:linear-gradient(225deg,#FFFFFF 0%,#FFFDF5 45%,#FCE8A6 100%);
-    background-attachment:fixed;
-    background-size:cover;
-  }
-  a{text-decoration:none;color:inherit;}
-  button{font-family:inherit;cursor:pointer;border:none;}
-  img{max-width:100%;display:block;}
-  .container{max-width:1280px;margin:0 auto;padding:0 24px;}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoldenGrad — недвижимость</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <style>
+    :root {
+      --gold-dark: #9c7214;
+      --gold-mid: #d4a838;
+      --gold-light: #fff3c4;
+      --text: #1f1b12;
+      --muted: #6c6350;
+      --glass: rgba(255, 255, 255, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.85);
+      --wa: #22c55e;
+      --danger: #dc2626;
+      --radius: 18px;
+    }
 
-  /* ---------- HEADER ---------- */
-  header{
-    position:sticky;top:0;z-index:50;
-    background:rgba(255,255,255,0.7);
-    backdrop-filter:blur(14px);
-    border-bottom:1px solid var(--glass-border);
-  }
-  .header-inner{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:12px 24px;gap:16px;flex-wrap:wrap;
-  }
-  .logo-block{display:flex;align-items:center;gap:10px;}
-  .logo-block img{height:46px;width:auto;}
-  .logo-text{
-    font-weight:800;font-size:1.3rem;letter-spacing:1px;line-height:1;
-    background:linear-gradient(90deg,#B8860B,#D4AF37,#FFF2B2,#D4AF37,#B8860B);
-    background-size:300% auto;
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    animation:shimmer 4s linear infinite;
-  }
-  @keyframes shimmer{
-    0%{background-position:0% 50%;}
-    100%{background-position:300% 50%;}
-  }
-  .header-actions{display:flex;align-items:center;gap:10px;}
-  .btn-pill{
-    display:flex;align-items:center;gap:6px;
-    padding:9px 16px;border-radius:999px;font-weight:600;font-size:.85rem;
-    transition:.2s;
-  }
-  .btn-whatsapp-top{background:var(--wa-green);color:#fff;}
-  .btn-whatsapp-top:hover{filter:brightness(1.07);}
-  .btn-admin{
-    background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text);
-  }
-  .btn-admin:hover{background:#fff;}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .search-bar{
-    flex:1;min-width:200px;max-width:380px;
-    display:flex;align-items:center;gap:8px;
-    background:#fff;border:1px solid var(--glass-border);
-    border-radius:999px;padding:9px 16px;
-  }
-  .search-bar input{border:none;outline:none;width:100%;font-family:inherit;font-size:.85rem;background:transparent;}
+    html, body {
+      min-height: 100vh;
+      font-family: 'Montserrat', sans-serif;
+      color: var(--text);
+      background: linear-gradient(225deg, #ffffff 0%, #fffdf5 45%, #fce8a6 100%);
+      background-attachment: fixed;
+    }
 
-  /* ---------- DISTRICT FILTER ---------- */
-  .filters-wrap{padding:18px 0 4px;}
-  .filters{
-    display:flex;gap:10px;flex-wrap:wrap;
-  }
-  .filter-btn{
-    padding:8px 18px;border-radius:999px;font-weight:600;font-size:.82rem;
-    background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-soft);
-    transition:.2s;
-  }
-  .filter-btn.active{
-    background:linear-gradient(135deg,#D4AF37,#F4E3A1);
-    color:#1E1E1E;border-color:transparent;
-    box-shadow:0 4px 14px rgba(212,175,55,.35);
-  }
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 18px 16px 48px;
+    }
 
-  /* ---------- GRID ---------- */
-  .apartments-grid{
-    display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
-    padding:20px 0 60px;
-  }
-  @media (max-width:1100px){.apartments-grid{grid-template-columns:repeat(3,1fr);}}
-  @media (max-width:860px){.apartments-grid{grid-template-columns:repeat(2,1fr);gap:16px;}}
-  @media (max-width:600px){.apartments-grid{grid-template-columns:repeat(2,1fr);gap:10px;}}
+    header {
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(212, 168, 56, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
 
-  .apt-card{
-    background:var(--glass-bg);backdrop-filter:blur(12px);
-    border:1px solid var(--glass-border);border-radius:var(--radius);
-    overflow:hidden;display:flex;flex-direction:column;
-    box-shadow:0 8px 24px rgba(0,0,0,0.05);
-    transition:transform .2s, box-shadow .2s;
-  }
-  .apt-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.09);}
-  .apt-img-wrap{position:relative;width:100%;aspect-ratio:4/3;background:#eee;overflow:hidden;cursor:pointer;}
-  .apt-img-wrap img{width:100%;height:100%;object-fit:cover;}
-  .apt-img-count{
-    position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;
-    font-size:.68rem;padding:3px 8px;border-radius:999px;
-  }
-  .apt-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:5px;flex:1;}
-  .apt-price{font-size:1.15rem;font-weight:800;color:#8a6d0f;}
-  .apt-title{font-weight:700;font-size:.92rem;line-height:1.25;}
-  .apt-address{font-size:.78rem;color:var(--text-soft);display:flex;align-items:center;gap:4px;}
-  .apt-badge{
-    display:inline-block;align-self:flex-start;background:var(--champagne);
-    color:#6b5513;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:999px;
-  }
-  .apt-desc{
-    font-size:.76rem;color:var(--text-soft);
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-    min-height:2.1em;
-  }
-  .apt-actions{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
-  .btn-details,.btn-whatsapp-card{
-    width:100%;padding:8px 6px;border-radius:10px;font-weight:600;font-size:.76rem;text-align:center;
-  }
-  .btn-details{background:#fff;border:1px solid var(--glass-border);color:var(--text);}
-  .btn-whatsapp-card{background:var(--wa-green);color:#fff;}
-  @media (max-width:600px){
-    .apt-price{font-size:1rem;}
-    .apt-title{font-size:.82rem;}
-    .btn-details,.btn-whatsapp-card{font-size:.68rem;padding:7px 4px;}
-  }
-  .empty-state{grid-column:1/-1;text-align:center;padding:60px 10px;color:var(--text-soft);}
+    .header-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
 
-  /* ---------- MODALS ---------- */
-  .modal-overlay{
-    position:fixed;inset:0;background:rgba(20,15,5,.55);
-    display:flex;align-items:center;justify-content:center;z-index:200;padding:16px;
-  }
-  .modal-overlay.hidden{display:none;}
-  .modal-box{
-    background:var(--cream);border-radius:20px;max-width:900px;width:100%;
-    max-height:92vh;overflow-y:auto;position:relative;border:1px solid var(--glass-border);
-    box-shadow:0 20px 60px rgba(0,0,0,.25);
-  }
-  .modal-box.small{max-width:420px;}
-  .modal-close{
-    position:absolute;top:12px;right:14px;background:#fff;border:1px solid var(--glass-border);
-    width:34px;height:34px;border-radius:50%;font-size:1.2rem;line-height:1;z-index:5;
-  }
-  .modal-flex{display:flex;flex-wrap:wrap;}
-  .modal-gallery{flex:1 1 420px;background:#111;position:relative;min-height:320px;}
-  .modal-gallery img{width:100%;height:100%;min-height:320px;object-fit:cover;}
-  .gallery-nav{
-    position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);
-    width:34px;height:34px;border-radius:50%;font-size:1.1rem;
-  }
-  .gallery-prev{left:10px;}
-  .gallery-next{right:10px;}
-  .gallery-thumbs{position:absolute;bottom:10px;left:0;right:0;display:flex;gap:6px;justify-content:center;}
-  .gallery-thumbs span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.55);}
-  .gallery-thumbs span.active{background:var(--gold);}
-  .modal-info{flex:1 1 320px;padding:28px 26px;}
-  .modal-price{font-size:1.6rem;font-weight:800;color:#8a6d0f;margin-bottom:6px;}
-  .modal-title{margin:0 0 8px;font-size:1.25rem;}
-  .modal-address{color:var(--text-soft);font-size:.9rem;margin-bottom:10px;}
-  .modal-desc{font-size:.9rem;line-height:1.6;color:#3a392f;margin-bottom:20px;white-space:pre-wrap;}
-  .btn-whatsapp-modal{
-    background:var(--wa-green);color:#fff;padding:13px 20px;border-radius:12px;font-weight:700;
-    width:100%;font-size:.95rem;
-  }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
 
-  /* ---------- ADMIN ---------- */
-  .admin-form{padding:26px;}
-  .admin-form h2{margin-top:0;}
-  .field-group{margin-bottom:14px;}
-  .field-group label{display:block;font-size:.8rem;font-weight:700;margin-bottom:5px;color:var(--text-soft);}
-  .field-group input,.field-group textarea,.field-group select{
-    width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--glass-border);
-    font-family:inherit;font-size:.88rem;background:#fff;
-  }
-  .field-group textarea{min-height:90px;resize:vertical;}
-  .btn-gold{
-    background:linear-gradient(135deg,#D4AF37,#F4E3A1);color:#1E1E1E;font-weight:700;
-    padding:11px 22px;border-radius:10px;
-  }
-  .btn-danger{background:#fde8e8;color:#b02a2a;padding:7px 12px;border-radius:8px;font-size:.78rem;font-weight:600;}
-  .admin-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
-  .admin-tab-btn{padding:8px 16px;border-radius:999px;background:#fff;border:1px solid var(--glass-border);font-weight:600;font-size:.82rem;}
-  .admin-tab-btn.active{background:linear-gradient(135deg,#D4AF37,#F4E3A1);}
-  .admin-tab{display:none;}
-  .admin-tab.active{display:block;}
-  .district-chip{
-    display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--glass-border);
-    padding:6px 10px 6px 14px;border-radius:999px;margin:0 8px 8px 0;font-size:.82rem;
-  }
-  .district-chip button{background:none;color:#b02a2a;font-weight:800;font-size:.9rem;}
-  .admin-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
-  .admin-list-item{
-    display:flex;justify-content:space-between;align-items:center;gap:10px;
-    background:#fff;border:1px solid var(--glass-border);border-radius:12px;padding:10px 14px;margin-bottom:8px;
-    flex-wrap:wrap;
-  }
-  .admin-list-item .meta{font-size:.82rem;color:var(--text-soft);}
-  .admin-actions-sm{display:flex;gap:6px;}
-  .btn-sm{padding:6px 11px;border-radius:8px;font-size:.76rem;font-weight:600;background:#f1f1f1;}
-  #adminError,#loginError{color:#b02a2a;font-size:.82rem;margin-top:6px;min-height:1em;}
-  .footer-note{padding:20px 0 60px;text-align:center;font-size:.75rem;color:var(--text-soft);}
-</style>
+    .logo-shimmer {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      background: linear-gradient(115deg, #9c7214 15%, #f5c84c 38%, #fffbe0 50%, #f5c84c 62%, #9c7214 85%);
+      background-size: 220% auto;
+      animation: shimmer 3.5s linear infinite;
+      -webkit-mask-image: url("logo.png");
+      -webkit-mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-image: url("logo.png");
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      background: linear-gradient(115deg, #9c7214 15%, #e0b038 40%, #fff6cc 50%, #e0b038 60%, #9c7214 85%);
+      background-size: 220% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shimmer 3.5s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-wa {
+      background: var(--wa);
+      color: #fff;
+    }
+
+    .btn-admin {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid rgba(156, 114, 20, 0.25);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #e5ba45, #c79520);
+      color: #1c1607;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.75);
+      color: var(--text);
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .filters-panel {
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 10px 30px rgba(156, 114, 20, 0.08);
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .search-row { grid-template-columns: 1fr; }
+    }
+
+    .input, .select, .textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(156, 114, 20, 0.22);
+      background: rgba(255, 255, 255, 0.92);
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .input:focus, .select:focus, .textarea:focus {
+      border-color: var(--gold-mid);
+    }
+
+    .textarea { min-height: 90px; resize: vertical; }
+
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+
+    .chip {
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(156, 114, 20, 0.25);
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .chip.active {
+      background: linear-gradient(135deg, #e7bc48, #c99722);
+      color: #1a1406;
+      border-color: transparent;
+    }
+
+    .price-filter-box {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .price-custom-input {
+      width: 175px;
+      padding: 7px 11px;
+      border-radius: 10px;
+      border: 1px solid rgba(156, 114, 20, 0.25);
+      background: #fff;
+      font-family: inherit;
+      font-size: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    @media (max-width: 1024px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 520px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    }
+
+    .card {
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 24px rgba(156, 114, 20, 0.08);
+      transition: transform 0.18s ease;
+    }
+
+    .card:hover { transform: translateY(-3px); }
+
+    .card-img-wrap {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      background: rgba(255, 248, 220, 0.7);
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-badges {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .badge {
+      background: rgba(25, 21, 12, 0.78);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      backdrop-filter: blur(6px);
+    }
+
+    .badge-gold {
+      background: rgba(235, 190, 65, 0.92);
+      color: #1a1406;
+    }
+
+    .card-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .card-price {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--gold-dark);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+      cursor: pointer;
+    }
+
+    .card-meta {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .card-actions {
+      margin-top: auto;
+      padding-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .btn-sm {
+      padding: 7px 10px;
+      font-size: 12px;
+      border-radius: 10px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .admin-box {
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 22px;
+      display: none;
+    }
+
+    .admin-box.open { display: block; }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .admin-grid { grid-template-columns: 1fr; }
+    }
+
+    .full-col { grid-column: 1 / -1; }
+
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--muted);
+    }
+
+    .districts-manage {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .district-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border: 1px solid rgba(156, 114, 20, 0.25);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .district-pill button {
+      border: none;
+      background: transparent;
+      color: var(--danger);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .existing-photos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .photo-thumb {
+      position: relative;
+      width: 74px;
+      height: 74px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.12);
+    }
+
+    .photo-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-thumb button {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(220, 38, 38, 0.9);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 12, 6, 0.55);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 60;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: #fffdf7;
+      border-radius: 20px;
+      max-width: 640px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .modal-close {
+      border: none;
+      background: rgba(0,0,0,0.06);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .modal-gallery {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      margin-bottom: 14px;
+    }
+
+    .modal-gallery img {
+      height: 220px;
+      border-radius: 14px;
+      object-fit: cover;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1c180d;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 90;
+      display: none;
+      max-width: 360px;
+    }
+
+    .toast.show { display: block; }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 24px 16px;
+    }
+  </style>
 </head>
 <body>
-
-<header>
-  <div class="header-inner">
-    <div class="logo-block">
-      <img src="logo.png" alt="GoldenGrad" onerror="this.style.display='none'">
-      <div>
-        <div class="logo-text">GOLDEN GRAD</div>
+  <header>
+    <div class="header-inner">
+      <a href="#top" class="brand" id="resetHome">
+        <div class="logo-shimmer" aria-label="GoldenGrad"></div>
+        <span class="brand-title">GOLDEN GRAD</span>
+      </a>
+      <div class="top-actions">
+        <a href="#" id="generalWaBtn" target="_blank" class="btn btn-wa">WhatsApp</a>
+        <button type="button" id="adminToggleBtn" class="btn btn-admin">✏️ Админ</button>
       </div>
     </div>
-    <div class="search-bar">
-      <span>🔍</span>
-      <input type="text" id="searchInput" placeholder="Поиск по адресу, названию...">
-    </div>
-    <div class="header-actions">
-      <a href="#" id="topWhatsapp" target="_blank" class="btn-pill btn-whatsapp-top">💬 WhatsApp</a>
-      <button class="btn-pill btn-admin" id="openAdminBtn">👤 Админ</button>
-    </div>
-  </div>
-</header>
+  </header>
 
-<div class="container">
-  <div class="filters-wrap">
-    <div class="filters" id="filtersBar">
-      <button class="filter-btn active" data-id="all">Все районы</button>
-    </div>
-  </div>
-
-  <div class="apartments-grid" id="apartmentsGrid">
-    <div class="empty-state">Загрузка квартир...</div>
-  </div>
-</div>
-
-<div class="footer-note">© 2026 GoldenGrad — недвижимость премиум-класса</div>
-
-<!-- ===================== FLAT MODAL ===================== -->
-<div class="modal-overlay hidden" id="flatModal">
-  <div class="modal-box">
-    <button class="modal-close" id="closeFlatModal">×</button>
-    <div class="modal-flex">
-      <div class="modal-gallery" id="modalGallery">
-        <img id="modalMainImg" src="" alt="">
-        <button class="gallery-nav gallery-prev" id="galleryPrev">‹</button>
-        <button class="gallery-nav gallery-next" id="galleryNext">›</button>
-        <div class="gallery-thumbs" id="galleryDots"></div>
-      </div>
-      <div class="modal-info">
-        <div class="modal-price" id="modalPrice"></div>
-        <h2 class="modal-title" id="modalTitle"></h2>
-        <div class="modal-address" id="modalAddress"></div>
-        <span class="apt-badge" id="modalBadge"></span>
-        <p class="modal-desc" id="modalDesc"></p>
-        <button class="btn-whatsapp-modal" id="modalWhatsapp">💬 Написать в WhatsApp</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ===================== ADMIN LOGIN MODAL ===================== -->
-<div class="modal-overlay hidden" id="loginModal">
-  <div class="modal-box small">
-    <button class="modal-close" id="closeLoginModal">×</button>
-    <div class="admin-form">
-      <h2>Вход в админ-панель</h2>
-      <div class="field-group">
-        <label>Пароль</label>
-        <input type="password" id="adminPasswordInput" placeholder="Введите пароль">
-      </div>
-      <button class="btn-gold" id="loginSubmitBtn">Войти</button>
-      <div id="loginError"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ===================== ADMIN PANEL MODAL ===================== -->
-<div class="modal-overlay hidden" id="adminModal">
-  <div class="modal-box" style="max-width:760px;">
-    <button class="modal-close" id="closeAdminModal">×</button>
-    <div class="admin-form">
-      <h2>Админ-панель GoldenGrad</h2>
-      <div class="admin-tabs">
-        <button class="admin-tab-btn active" data-tab="tabDistricts">Районы</button>
-        <button class="admin-tab-btn" data-tab="tabAddFlat">Добавить квартиру</button>
-        <button class="admin-tab-btn" data-tab="tabList">Список объявлений</button>
-      </div>
-
-      <div class="admin-tab active" id="tabDistricts">
-        <div class="admin-row">
-          <input type="text" id="newDistrictInput" placeholder="Название района" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--glass-border);">
-          <button class="btn-gold" id="addDistrictBtn">Добавить</button>
+  <main class="container">
+    <!-- АДМИН-ПАНЕЛЬ -->
+    <section id="adminPanel" class="admin-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <h2 id="flatFormTitle" style="font-size:17px;">Добавить новую квартиру</h2>
+        <div style="display:flex; gap:8px;">
+          <button type="button" id="cancelEditBtn" class="btn btn-ghost btn-sm" style="display:none;">Отменить редактирование</button>
+          <button type="button" id="logoutAdminBtn" class="btn btn-ghost btn-sm">Выйти</button>
         </div>
-        <div id="districtChipsWrap"></div>
       </div>
 
-      <div class="admin-tab" id="tabAddFlat">
-        <form id="addFlatForm">
-          <div class="field-group">
-            <label>Район</label>
-            <select id="flatDistrictSelect" required></select>
-          </div>
-          <div class="field-group">
-            <label>Заголовок (например: «2-комн. квартира, 64 м²»)</label>
-            <input type="text" id="flatTitleInput" required>
-          </div>
-          <div class="field-group">
-            <label>Цена ($)</label>
-            <input type="number" id="flatPriceInput" required min="0">
-          </div>
-          <div class="field-group">
-            <label>Адрес</label>
-            <input type="text" id="flatAddressInput" required>
-          </div>
-          <div class="field-group">
-            <label>Описание</label>
-            <textarea id="flatDescInput"></textarea>
-          </div>
-          <div class="field-group">
-            <label>Фотографии (можно выбрать несколько)</label>
-            <input type="file" id="flatPhotosInput" accept="image/*" multiple>
-          </div>
-          <button type="submit" class="btn-gold">Сохранить квартиру</button>
-          <div id="adminError"></div>
-        </form>
-      </div>
+      <form id="flatForm" class="admin-grid">
+        <div>
+          <label class="field-label" for="flatTitle">Название / ЖК *</label>
+          <input id="flatTitle" type="text" class="input" placeholder="Например: Светлая квартира в центре" required />
+        </div>
 
-      <div class="admin-tab" id="tabList">
-        <div id="adminFlatsList"></div>
-      </div>
-    </div>
-  </div>
-</div>
+        <div>
+          <label class="field-label" for="flatPriceText">Цена (текстом для карточки) *</label>
+          <input id="flatPriceText" type="text" class="input" placeholder="Например: 38 000 000 ₸ или 250 000 ₸/мес" required />
+        </div>
 
-<!-- ===================== EDIT FLAT MODAL ===================== -->
-<div class="modal-overlay hidden" id="editFlatModal">
-  <div class="modal-box small">
-    <button class="modal-close" id="closeEditFlatModal">×</button>
-    <div class="admin-form">
-      <h2>Редактировать квартиру</h2>
-      <div class="field-group">
-        <label>Район</label>
-        <select id="editFlatDistrictSelect"></select>
-      </div>
-      <div class="field-group">
-        <label>Заголовок</label>
-        <input type="text" id="editFlatTitleInput">
-      </div>
-      <div class="field-group">
-        <label>Цена ($)</label>
-        <input type="number" id="editFlatPriceInput" min="0">
-      </div>
-      <div class="field-group">
-        <label>Адрес</label>
-        <input type="text" id="editFlatAddressInput">
-      </div>
-      <div class="field-group">
-        <label>Описание</label>
-        <textarea id="editFlatDescInput"></textarea>
-      </div>
-      <div class="field-group">
-        <label>Добавить ещё фото (необязательно)</label>
-        <input type="file" id="editFlatPhotosInput" accept="image/*" multiple>
-      </div>
-      <button class="btn-gold" id="saveEditFlatBtn">Сохранить изменения</button>
-      <div id="editFlatError" style="color:#b02a2a;font-size:.82rem;margin-top:6px;"></div>
-    </div>
-  </div>
-</div>
+        <div>
+          <label class="field-label" for="flatPriceNum">Цена числом для фильтра (в тенге/валюте)</label>
+          <input id="flatPriceNum" type="number" class="input" placeholder="Например: 38000000 (если пусто — возьмётся из цены)" />
+        </div>
 
-<script>
-/* =========================================================================
-   КОНСТАНТЫ — ВСТАВЬТЕ СВОИ ЗНАЧЕНИЯ ПЕРЕД ДЕПЛОЕМ
-   ========================================================================= */
-const SUPABASE_URL = "https://imzfrxwloynognwnccbl.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltemZyeHdsb3lub2dud25jY2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2NDU5MzEsImV4cCI6MjExMTIyMTkzMX0.XWhXDFDpgMuquv4pmf1gi0ZZXb7fwKtIuV1y1GbB-74";
-const WHATSAPP_PHONE = "77785948630";      // без +, без пробелов, с кодом страны
-const ADMIN_PASSWORD = "Solnce12345";       // поменяйте перед деплоем
-const STORAGE_BUCKET = "flat-photos";
-/* ========================================================================= */
+        <div>
+          <label class="field-label" for="flatDealType">Тип сделки</label>
+          <select id="flatDealType" class="select">
+            <option value="sale">Постоянная покупка (Продажа)</option>
+            <option value="rent">В аренду (Сдаётся)</option>
+          </select>
+        </div>
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        <div>
+          <label class="field-label" for="flatRooms">Комнатность</label>
+          <select id="flatRooms" class="select">
+            <option value="">Не указано</option>
+            <option value="1">1-комнатная</option>
+            <option value="2">2-комнатная</option>
+            <option value="3">3-комнатная</option>
+            <option value="4">4-комнатная</option>
+          </select>
+        </div>
 
-let districts = [];
-let flats = [];
-let currentDistrict = 'all';
-let searchQuery = '';
-let currentGalleryIndex = 0;
-let currentGalleryFlat = null;
-let isAdmin = false;
+        <div>
+          <label class="field-label" for="flatDistrict">Район (необязательно)</label>
+          <select id="flatDistrict" class="select">
+            <option value="">Без района (не указан)</option>
+          </select>
+        </div>
 
-// ---------- Utility ----------
-function formatPrice(n){
-  return Number(n).toLocaleString('ru-RU');
-}
-function getFlatLink(id){
-  return location.origin + location.pathname + '#flat-' + id;
-}
-function waLink(flat){
-  const text = `Здравствуйте! Пишу с сайта GoldenGrad. Интересует эта квартира: ${getFlatLink(flat.id)}`;
-  return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
-}
-function districtName(id){
-  const d = districts.find(x => String(x.id) === String(id));
-  return d ? d.name : '';
-}
+        <div class="full-col">
+          <label class="field-label" for="flatAddress">Адрес *</label>
+          <input id="flatAddress" type="text" class="input" placeholder="Улица, дом" required />
+        </div>
 
-// ---------- Data loading ----------
-async function loadData(){
-  const [{data: dData, error: dErr}, {data: fData, error: fErr}] = await Promise.all([
-    supabase.from('districts').select('*').order('name'),
-    supabase.from('flats').select('*').order('created_at', {ascending:false})
-  ]);
-  if (dErr) console.error(dErr);
-  if (fErr) console.error(fErr);
-  districts = dData || [];
-  flats = fData || [];
-  renderFilters();
-  renderGrid();
-  populateDistrictSelects();
-  if (isAdmin){ renderDistrictChips(); renderAdminFlatsList(); }
-  handleHashOnLoad();
-}
+        <div class="full-col">
+          <label class="field-label" for="flatDescription">Описание</label>
+          <textarea id="flatDescription" class="textarea" placeholder="Этаж, площадь, ремонт, условия аренды или покупки..."></textarea>
+        </div>
 
-// ---------- Filters ----------
-function renderFilters(){
-  const bar = document.getElementById('filtersBar');
-  bar.innerHTML = '';
-  const allBtn = document.createElement('button');
-  allBtn.className = 'filter-btn' + (currentDistrict === 'all' ? ' active' : '');
-  allBtn.textContent = 'Все районы';
-  allBtn.dataset.id = 'all';
-  allBtn.onclick = () => { currentDistrict = 'all'; renderFilters(); renderGrid(); };
-  bar.appendChild(allBtn);
-  districts.forEach(d => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn' + (String(currentDistrict) === String(d.id) ? ' active' : '');
-    btn.textContent = d.name;
-    btn.dataset.id = d.id;
-    btn.onclick = () => { currentDistrict = d.id; renderFilters(); renderGrid(); };
-    bar.appendChild(btn);
-  });
-}
+        <div class="full-col">
+          <label class="field-label" for="flatPhotosInput">Фотографии квартиры</label>
+          <input id="flatPhotosInput" type="file" accept="image/*" multiple class="input" />
+          <div id="existingPhotosBox" class="existing-photos"></div>
+        </div>
 
-// ---------- Grid ----------
-function renderGrid(){
-  const grid = document.getElementById('apartmentsGrid');
-  grid.innerHTML = '';
-  let list = flats.filter(f => currentDistrict === 'all' || String(f.district_id) === String(currentDistrict));
-  if (searchQuery.trim()){
-    const q = searchQuery.trim().toLowerCase();
-    list = list.filter(f => (f.title||'').toLowerCase().includes(q) || (f.address||'').toLowerCase().includes(q));
-  }
-  if (!list.length){
-    grid.innerHTML = '<div class="empty-state">Квартиры не найдены</div>';
-    return;
-  }
-  list.forEach(f => grid.appendChild(buildCard(f)));
-}
+        <div class="full-col" style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button type="submit" id="saveFlatBtn" class="btn btn-gold">Сохранить квартиру</button>
+        </div>
+      </form>
 
-function buildCard(flat){
-  const photos = flat.photos || [];
-  const card = document.createElement('div');
-  card.className = 'apt-card';
-  card.id = 'flat-card-' + flat.id;
-  card.innerHTML = `
-    <div class="apt-img-wrap" data-id="${flat.id}">
-      <img src="${photos[0] || ''}" alt="${escapeHtml(flat.title)}" loading="lazy">
-      ${photos.length > 1 ? `<span class="apt-img-count">📷 ${photos.length}</span>` : ''}
-    </div>
-    <div class="apt-body">
-      <div class="apt-price">$ ${formatPrice(flat.price)}</div>
-      <div class="apt-title">${escapeHtml(flat.title)}</div>
-      <div class="apt-address">📍 ${escapeHtml(flat.address)}</div>
-      <span class="apt-badge">${escapeHtml(districtName(flat.district_id))}</span>
-      <div class="apt-desc">${escapeHtml(flat.description || '')}</div>
-      <div class="apt-actions">
-        <button class="btn-details" data-id="${flat.id}">Подробнее</button>
-        <a class="btn-whatsapp-card" href="${waLink(flat)}" target="_blank" style="display:block;text-decoration:none;">Написать в WhatsApp</a>
-      </div>
-    </div>
-  `;
-  card.querySelector('.apt-img-wrap').onclick = () => openFlatModal(flat.id);
-  card.querySelector('.btn-details').onclick = () => openFlatModal(flat.id);
-  return card;
-}
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid rgba(156,114,20,0.2);" />
 
-function escapeHtml(str){
-  const div = document.createElement('div');
-  div.textContent = str || '';
-  return div.innerHTML;
-}
-
-// ---------- Flat modal / gallery ----------
-function openFlatModal(id, pushHash = true){
-  const flat = flats.find(f => String(f.id) === String(id));
-  if (!flat) return;
-  currentGalleryFlat = flat;
-  currentGalleryIndex = 0;
-  document.getElementById('modalPrice').textContent = '$ ' + formatPrice(flat.price);
-  document.getElementById('modalTitle').textContent = flat.title;
-  document.getElementById('modalAddress').textContent = '📍 ' + flat.address;
-  document.getElementById('modalBadge').textContent = districtName(flat.district_id);
-  document.getElementById('modalDesc').textContent = flat.description || '';
-  document.getElementById('modalWhatsapp').onclick = () => window.open(waLink(flat), '_blank');
-  renderGalleryImage();
-  document.getElementById('flatModal').classList.remove('hidden');
-  if (pushHash) history.pushState(null, '', '#flat-' + flat.id);
-}
-function closeFlatModal(){
-  document.getElementById('flatModal').classList.add('hidden');
-  if (location.hash.startsWith('#flat-')) history.pushState(null, '', location.pathname);
-}
-function renderGalleryImage(){
-  if (!currentGalleryFlat) return;
-  const photos = currentGalleryFlat.photos || [];
-  const img = document.getElementById('modalMainImg');
-  img.src = photos[currentGalleryIndex] || '';
-  const dotsWrap = document.getElementById('galleryDots');
-  dotsWrap.innerHTML = '';
-  photos.forEach((_, i) => {
-    const dot = document.createElement('span');
-    if (i === currentGalleryIndex) dot.classList.add('active');
-    dotsWrap.appendChild(dot);
-  });
-  const hasMultiple = photos.length > 1;
-  document.getElementById('galleryPrev').style.display = hasMultiple ? 'block' : 'none';
-  document.getElementById('galleryNext').style.display = hasMultiple ? 'block' : 'none';
-}
-document.getElementById('galleryPrev').onclick = () => {
-  const photos = currentGalleryFlat.photos || [];
-  currentGalleryIndex = (currentGalleryIndex - 1 + photos.length) % photos.length;
-  renderGalleryImage();
-};
-document.getElementById('galleryNext').onclick = () => {
-  const photos = currentGalleryFlat.photos || [];
-  currentGalleryIndex = (currentGalleryIndex + 1) % photos.length;
-  renderGalleryImage();
-};
-document.getElementById('closeFlatModal').onclick = closeFlatModal;
-document.getElementById('flatModal').addEventListener('click', e => {
-  if (e.target.id === 'flatModal') closeFlatModal();
-});
-
-function handleHashOnLoad(){
-  if (location.hash.startsWith('#flat-')){
-    const id = location.hash.replace('#flat-', '');
-    openFlatModal(id, false);
-  }
-}
-window.addEventListener('hashchange', () => {
-  if (location.hash.startsWith('#flat-')){
-    const id = location.hash.replace('#flat-', '');
-    openFlatModal(id, false);
-  } else {
-    document.getElementById('flatModal').classList.add('hidden');
-  }
-});
-
-// ---------- Search ----------
-document.getElementById('searchInput').addEventListener('input', e => {
-  searchQuery = e.target.value;
-  renderGrid();
-});
-
-// ---------- Top WhatsApp button ----------
-document.getElementById('topWhatsapp').href =
-  `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Здравствуйте! Пишу с сайта GoldenGrad.')}`;
-
-// =========================================================================
-// ADMIN
-// =========================================================================
-const openAdminBtn = document.getElementById('openAdminBtn');
-const loginModal = document.getElementById('loginModal');
-const adminModal = document.getElementById('adminModal');
-
-openAdminBtn.onclick = () => {
-  if (isAdmin){
-    openAdminPanel();
-  } else {
-    loginModal.classList.remove('hidden');
-  }
-};
-document.getElementById('closeLoginModal').onclick = () => loginModal.classList.add('hidden');
-document.getElementById('loginSubmitBtn').onclick = () => {
-  const val = document.getElementById('adminPasswordInput').value;
-  if (val === ADMIN_PASSWORD){
-    isAdmin = true;
-    loginModal.classList.add('hidden');
-    document.getElementById('adminPasswordInput').value = '';
-    document.getElementById('loginError').textContent = '';
-    openAdminPanel();
-  } else {
-    document.getElementById('loginError').textContent = 'Неверный пароль';
-  }
-};
-document.getElementById('closeAdminModal').onclick = () => adminModal.classList.add('hidden');
-
-function openAdminPanel(){
-  renderDistrictChips();
-  renderAdminFlatsList();
-  populateDistrictSelects();
-  adminModal.classList.remove('hidden');
-}
-
-// Tabs
-document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
-  };
-});
-
-// ---------- Districts CRUD ----------
-function renderDistrictChips(){
-  const wrap = document.getElementById('districtChipsWrap');
-  wrap.innerHTML = '';
-  districts.forEach(d => {
-    const chip = document.createElement('span');
-    chip.className = 'district-chip';
-    chip.innerHTML = `${escapeHtml(d.name)} <button>×</button>`;
-    chip.querySelector('button').onclick = async () => {
-      if (!confirm(`Удалить район «${d.name}»? Квартиры этого района останутся без района.`)) return;
-      const {error} = await supabase.from('districts').delete().eq('id', d.id);
-      if (error){ alert('Ошибка удаления: ' + error.message); return; }
-      await loadData();
-    };
-    wrap.appendChild(chip);
-  });
-}
-document.getElementById('addDistrictBtn').onclick = async () => {
-  const input = document.getElementById('newDistrictInput');
-  const name = input.value.trim();
-  if (!name) return;
-  const {error} = await supabase.from('districts').insert({name});
-  if (error){ alert('Ошибка: ' + error.message); return; }
-  input.value = '';
-  await loadData();
-};
-
-function populateDistrictSelects(){
-  ['flatDistrictSelect', 'editFlatDistrictSelect'].forEach(selId => {
-    const sel = document.getElementById(selId);
-    const prev = sel.value;
-    sel.innerHTML = districts.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
-    if (prev) sel.value = prev;
-  });
-}
-
-// ---------- Upload helper ----------
-async function uploadPhotos(fileList){
-  const urls = [];
-  for (const file of fileList){
-    const path = `${Date.now()}_${Math.random().toString(36).slice(2)}_${file.name}`;
-    const {error} = await supabase.storage.from(STORAGE_BUCKET).upload(path, file);
-    if (error) throw error;
-    const {data} = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path);
-    urls.push(data.publicUrl);
-  }
-  return urls;
-}
-
-// ---------- Add flat ----------
-document.getElementById('addFlatForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const errEl = document.getElementById('adminError');
-  errEl.textContent = '';
-  try{
-    const files = document.getElementById('flatPhotosInput').files;
-    const photoUrls = files.length ? await uploadPhotos(files) : [];
-    const payload = {
-      district_id: document.getElementById('flatDistrictSelect').value || null,
-      title: document.getElementById('flatTitleInput').value.trim(),
-      price: Number(document.getElementById('flatPriceInput').value),
-      address: document.getElementById('flatAddressInput').value.trim(),
-      description: document.getElementById('flatDescInput').value.trim(),
-      photos: photoUrls
-    };
-    const {error} = await supabase.from('flats').insert(payload);
-    if (error) throw error;
-    document.getElementById('addFlatForm').reset();
-    await loadData();
-    document.querySelector('.admin-tab-btn[data-tab="tabList"]').click();
-  }catch(err){
-    errEl.textContent = 'Ошибка: ' + err.message;
-  }
-});
-
-// ---------- List / edit / delete flats ----------
-function renderAdminFlatsList(){
-  const wrap = document.getElementById('adminFlatsList');
-  wrap.innerHTML = '';
-  if (!flats.length){
-    wrap.innerHTML = '<p>Пока нет объявлений.</p>';
-    return;
-  }
-  flats.forEach(f => {
-    const row = document.createElement('div');
-    row.className = 'admin-list-item';
-    row.innerHTML = `
       <div>
-        <strong>${escapeHtml(f.title)}</strong>
-        <div class="meta">$ ${formatPrice(f.price)} · ${escapeHtml(districtName(f.district_id))} · ${escapeHtml(f.address)}</div>
+        <h3 style="font-size:15px; margin-bottom:8px;">Управление районами (необязательный фильтр)</h3>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; max-width:440px;">
+          <input id="newDistrictName" type="text" class="input" placeholder="Название нового района" style="flex:1; min-width:180px;" />
+          <button type="button" id="addDistrictBtn" class="btn btn-gold btn-sm">Добавить район</button>
+        </div>
+        <div id="adminDistrictsList" class="districts-manage"></div>
       </div>
-      <div class="admin-actions-sm">
-        <button class="btn-sm" data-edit="${f.id}">Редактировать</button>
-        <button class="btn-danger" data-del="${f.id}">Удалить</button>
+    </section>
+
+    <!-- ФИЛЬТРЫ ПОИСКА -->
+    <section class="filters-panel">
+      <div class="search-row">
+        <input id="searchInput" type="text" class="input" placeholder="Поиск по адресу, названию или описанию..." />
+        <button type="button" id="resetFiltersBtn" class="btn btn-ghost">Сбросить фильтры</button>
       </div>
-    `;
-    row.querySelector('[data-edit]').onclick = () => openEditFlat(f.id);
-    row.querySelector('[data-del]').onclick = async () => {
-      if (!confirm(`Удалить «${f.title}»?`)) return;
-      const {error} = await supabase.from('flats').delete().eq('id', f.id);
-      if (error){ alert('Ошибка: ' + error.message); return; }
+
+      <!-- Сделка -->
+      <div class="filter-group" id="dealChips">
+        <span class="filter-label">Формат:</span>
+        <button type="button" class="chip active" data-deal="all">Все</button>
+        <button type="button" class="chip" data-deal="sale">Покупка</button>
+        <button type="button" class="chip" data-deal="rent">В аренду (сдаётся)</button>
+      </div>
+
+      <!-- Комнаты -->
+      <div class="filter-group" id="roomsChips">
+        <span class="filter-label">Комнаты:</span>
+        <button type="button" class="chip active" data-rooms="all">Все</button>
+        <button type="button" class="chip" data-rooms="1">1-комн.</button>
+        <button type="button" class="chip" data-rooms="2">2-комн.</button>
+        <button type="button" class="chip" data-rooms="3">3-комн.</button>
+        <button type="button" class="chip" data-rooms="4">4-комн.</button>
+      </div>
+
+      <!-- Цена -->
+      <div class="price-filter-box" id="priceChips">
+        <span class="filter-label">Цена:</span>
+        <button type="button" class="chip active" data-price="any">Любая</button>
+        <button type="button" class="chip" data-price="to_25m">До 25 млн</button>
+        <button type="button" class="chip" data-price="to_50m">До 50 млн</button>
+        <button type="button" class="chip" data-price="from_50m">От 50 млн</button>
+        <input id="maxPriceCustom" type="number" class="price-custom-input" placeholder="До суммы (например 35000000)" />
+      </div>
+
+      <!-- Районы -->
+      <div class="filter-group" id="districtChips">
+        <span class="filter-label">Район:</span>
+        <button type="button" class="chip active" data-district="all">Все районы</button>
+      </div>
+    </section>
+
+    <!-- СПИСОК КВАРТИР -->
+    <section id="flatsGrid" class="grid"></section>
+    <div id="emptyState" class="empty-state" style="display:none;">Квартиры не найдены</div>
+  </main>
+
+  <footer>© 2026 GoldenGrad — недвижимость</footer>
+
+  <!-- МОДАЛКА ПРОСМОТРА КВАРТИРЫ -->
+  <div id="flatModalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle" style="font-size:18px;"></h3>
+        <button type="button" id="closeModalBtn" class="modal-close">&times;</button>
+      </div>
+      <div id="modalGallery" class="modal-gallery"></div>
+      <div id="modalPrice" style="font-size:17px; font-weight:800; color:var(--gold-dark); margin-bottom:6px;"></div>
+      <div id="modalMeta" style="font-size:13px; color:var(--muted); margin-bottom:12px;"></div>
+      <p id="modalDesc" style="font-size:14px; line-height:1.55; margin-bottom:16px; white-space:pre-line;"></p>
+      <a id="modalWaLink" href="#" target="_blank" class="btn btn-wa">Написать в WhatsApp по квартире</a>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА ВХОДА В АДМИНКУ -->
+  <div id="loginModalBackdrop" class="modal-backdrop">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-header">
+        <h3 style="font-size:17px;">Вход в панель администратора</h3>
+        <button type="button" id="closeLoginBtn" class="modal-close">&times;</button>
+      </div>
+      <form id="loginForm" style="display:flex; flex-direction:column; gap:12px;">
+        <input id="adminPasswordInput" type="password" class="input" placeholder="Введите пароль" required />
+        <button type="submit" class="btn btn-gold">Войти</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    /* =========================================================================
+       КОНСТАНТЫ — ВСТАВЬТЕ СВОИ ЗНАЧЕНИЯ ПЕРЕД ДЕПЛОЕМ
+       ========================================================================= */
+    const SUPABASE_URL = "https://imzfrxwloynognwnccbl.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltemZyeHdsb3lub2dud25jY2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNDM5NzAsImV4cCI6MjA3OTcxOTk3MH0.XWhXDFDPgMuquv4pmf1gi0ZZXb7fwKtIuV1y1GbB-74";
+    const WHATSAPP_PHONE = "77785948630";
+    const ADMIN_PASSWORD = "Solnce12345";
+    const STORAGE_BUCKET = "flat-photos";
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let districts = [];
+    let flats = [];
+    let isAdmin = false;
+    let editingFlatId = null;
+    let editingPhotos = [];
+
+    const filters = {
+      search: "",
+      deal: "all",
+      rooms: "all",
+      pricePreset: "any",
+      maxCustom: null,
+      district: "all"
+    };
+
+    const toastEl = document.getElementById("toast");
+    function showToast(msg, isError = false) {
+      toastEl.textContent = msg;
+      toastEl.style.background = isError ? "#991b1b" : "#1c180d";
+      toastEl.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove("show"), 3200);
+    }
+
+    function extractNumberFromPrice(priceText, explicitNum) {
+      if (explicitNum !== null && explicitNum !== undefined && explicitNum !== "" && !Number.isNaN(Number(explicitNum))) {
+        return Number(explicitNum);
+      }
+      if (!priceText) return null;
+      const lower = String(priceText).toLowerCase();
+      const cleaned = lower.replace(/\s+/g, "").replace(",", ".");
+      const numMatch = cleaned.match(/(\d+(?:\.\d+)?)/);
+      if (!numMatch) return null;
+      let val = parseFloat(numMatch[1]);
+      if (lower.includes("млн") || lower.includes("m")) {
+        val = val * 1_000_000;
+      } else if (lower.includes("тыс") || lower.includes("к") || lower.includes("k")) {
+        val = val * 1_000;
+      }
+      return Math.round(val);
+    }
+
+    function buildWaUrl(flat) {
+      const shareUrl = `${window.location.origin}${window.location.pathname}#flat-${flat.id}`;
+      const text = flat
+        ? `Здравствуйте! Интересует квартира: "${flat.title}" (${flat.price}). Ссылка: ${shareUrl}`
+        : "Здравствуйте! Подскажите, пожалуйста, по актуальным квартирам GoldenGrad.";
+      return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
+    }
+
+    document.getElementById("generalWaBtn").href = buildWaUrl(null);
+
+    async function loadData() {
+      const [{ data: dData, error: dErr }, { data: fData, error: fErr }] = await Promise.all([
+        sb.from("districts").select("*").order("name", { ascending: true }),
+        sb.from("flats").select("*").order("created_at", { ascending: false })
+      ]);
+
+      if (dErr) {
+        console.error("Ошибка загрузки районов:", dErr);
+        showToast("Ошибка загрузки районов: " + dErr.message, true);
+      } else {
+        districts = dData || [];
+      }
+
+      if (fErr) {
+        console.error("Ошибка загрузки квартир:", fErr);
+        showToast("Ошибка загрузки квартир: " + fErr.message, true);
+      } else {
+        flats = fData || [];
+      }
+
+      renderDistrictControls();
+      renderFlats();
+      checkHashFlat();
+    }
+
+    function renderDistrictControls() {
+      const chipsWrap = document.getElementById("districtChips");
+      chipsWrap.innerHTML = `<span class="filter-label">Район:</span>`;
+
+      const allBtn = document.createElement("button");
+      allBtn.type = "button";
+      allBtn.className = "chip" + (filters.district === "all" ? " active" : "");
+      allBtn.dataset.district = "all";
+      allBtn.textContent = "Все районы";
+      allBtn.onclick = () => {
+        filters.district = "all";
+        renderDistrictControls();
+        renderFlats();
+      };
+      chipsWrap.appendChild(allBtn);
+
+      const noDistBtn = document.createElement("button");
+      noDistBtn.type = "button";
+      noDistBtn.className = "chip" + (filters.district === "none" ? " active" : "");
+      noDistBtn.dataset.district = "none";
+      noDistBtn.textContent = "Без района";
+      noDistBtn.onclick = () => {
+        filters.district = "none";
+        renderDistrictControls();
+        renderFlats();
+      };
+      chipsWrap.appendChild(noDistBtn);
+
+      districts.forEach(d => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip" + (String(filters.district) === String(d.id) ? " active" : "");
+        btn.dataset.district = d.id;
+        btn.textContent = d.name;
+        btn.onclick = () => {
+          filters.district = String(d.id);
+          renderDistrictControls();
+          renderFlats();
+        };
+        chipsWrap.appendChild(btn);
+      });
+
+      const selectEl = document.getElementById("flatDistrict");
+      const prevVal = selectEl.value;
+      selectEl.innerHTML = `<option value="">Без района (необязательно)</option>`;
+      districts.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d.id;
+        opt.textContent = d.name;
+        selectEl.appendChild(opt);
+      });
+      if (prevVal) selectEl.value = prevVal;
+
+      const adminList = document.getElementById("adminDistrictsList");
+      adminList.innerHTML = "";
+      districts.forEach(d => {
+        const pill = document.createElement("span");
+        pill.className = "district-pill";
+        pill.innerHTML = `<span>${escapeHtml(d.name)}</span><button type="button" title="Удалить">&times;</button>`;
+        pill.querySelector("button").onclick = () => deleteDistrict(d.id);
+        adminList.appendChild(pill);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function getFilteredFlats() {
+      return flats.filter(f => {
+        if (filters.deal !== "all") {
+          const deal = f.deal_type || "sale";
+          if (deal !== filters.deal) return false;
+        }
+
+        if (filters.rooms !== "all") {
+          if (String(f.rooms || "") !== String(filters.rooms)) return false;
+        }
+
+        if (filters.district !== "all") {
+          if (filters.district === "none") {
+            if (f.district_id !== null && f.district_id !== undefined) return false;
+          } else {
+            if (String(f.district_id) !== String(filters.district)) return false;
+          }
+        }
+
+        const numPrice = extractNumberFromPrice(f.price, f.price_num);
+        if (filters.maxCustom && filters.maxCustom > 0) {
+          if (numPrice === null || numPrice > filters.maxCustom) return false;
+        } else if (filters.pricePreset !== "any") {
+          if (numPrice === null) return false;
+          if (filters.pricePreset === "to_25m" && numPrice > 25_000_000) return false;
+          if (filters.pricePreset === "to_50m" && numPrice > 50_000_000) return false;
+          if (filters.pricePreset === "from_50m" && numPrice < 50_000_000) return false;
+        }
+
+        if (filters.search.trim()) {
+          const q = filters.search.trim().toLowerCase();
+          const distName = districts.find(d => String(d.id) === String(f.district_id))?.name || "";
+          const hay = `${f.title || ""} ${f.address || ""} ${f.description || ""} ${distName}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+
+        return true;
+      });
+    }
+
+    function renderFlats() {
+      const grid = document.getElementById("flatsGrid");
+      const empty = document.getElementById("emptyState");
+      const list = getFilteredFlats();
+
+      grid.innerHTML = "";
+      if (!list.length) {
+        empty.style.display = "block";
+        return;
+      }
+      empty.style.display = "none";
+
+      list.forEach(flat => {
+        const distName = districts.find(d => String(d.id) === String(flat.district_id))?.name;
+        const photos = Array.isArray(flat.photos) && flat.photos.length ? flat.photos : ["logo.png"];
+        const dealLabel = flat.deal_type === "rent" ? "Аренда" : "Покупка";
+        const roomsLabel = flat.rooms ? `${flat.rooms}-комн.` : "";
+
+        const card = document.createElement("article");
+        card.className = "card";
+        card.id = `flat-${flat.id}`;
+
+        card.innerHTML = `
+          <div class="card-img-wrap">
+            <img src="${escapeHtml(photos[0])}" alt="${escapeHtml(flat.title)}" loading="lazy" />
+            <div class="card-badges">
+              <span class="badge badge-gold">${dealLabel}</span>
+              ${roomsLabel ? `<span class="badge">${roomsLabel}</span>` : ""}
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-price">${escapeHtml(flat.price)}</div>
+            <div class="card-title">${escapeHtml(flat.title)}</div>
+            <div class="card-meta">${distName ? `Район: ${escapeHtml(distName)} · ` : ""}${escapeHtml(flat.address || "")}</div>
+            <div class="card-actions">
+              <a href="${buildWaUrl(flat)}" target="_blank" class="btn btn-wa btn-sm">WhatsApp</a>
+              ${isAdmin ? `
+                <button type="button" class="btn btn-ghost btn-sm edit-flat-btn">✏️ Изменить</button>
+                <button type="button" class="btn btn-danger btn-sm del-flat-btn">Удалить</button>
+              ` : ""}
+            </div>
+          </div>
+        `;
+
+        card.querySelector(".card-img-wrap").onclick = () => openFlatModal(flat);
+        card.querySelector(".card-title").onclick = () => openFlatModal(flat);
+
+        if (isAdmin) {
+          card.querySelector(".edit-flat-btn").onclick = () => startEditFlat(flat);
+          card.querySelector(".del-flat-btn").onclick = () => deleteFlat(flat.id);
+        }
+
+        grid.appendChild(card);
+      });
+    }
+
+    function openFlatModal(flat) {
+      const distName = districts.find(d => String(d.id) === String(flat.district_id))?.name;
+      const photos = Array.isArray(flat.photos) && flat.photos.length ? flat.photos : ["logo.png"];
+      const dealLabel = flat.deal_type === "rent" ? "В аренду (сдаётся)" : "Постоянная покупка";
+      const roomsLabel = flat.rooms ? `${flat.rooms}-комнатная` : "Комнатность не указана";
+
+      document.getElementById("modalTitle").textContent = flat.title;
+      document.getElementById("modalPrice").textContent = flat.price;
+      document.getElementById("modalMeta").textContent = [
+        dealLabel,
+        roomsLabel,
+        distName ? `Район: ${distName}` : "Район не указан",
+        flat.address ? `Адрес: ${flat.address}` : ""
+      ].filter(Boolean).join(" • ");
+      document.getElementById("modalDesc").textContent = flat.description || "Описание отсутствует.";
+      document.getElementById("modalWaLink").href = buildWaUrl(flat);
+
+      const gallery = document.getElementById("modalGallery");
+      gallery.innerHTML = photos.map(src => `<img src="${escapeHtml(src)}" alt="${escapeHtml(flat.title)}" />`).join("");
+
+      window.location.hash = `flat-${flat.id}`;
+      document.getElementById("flatModalBackdrop").classList.add("open");
+    }
+
+    function closeFlatModal() {
+      document.getElementById("flatModalBackdrop").classList.remove("open");
+      if (window.location.hash.startsWith("#flat-")) {
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+    }
+
+    document.getElementById("closeModalBtn").onclick = closeFlatModal;
+    document.getElementById("flatModalBackdrop").onclick = e => {
+      if (e.target.id === "flatModalBackdrop") closeFlatModal();
+    };
+
+    function checkHashFlat() {
+      const h = window.location.hash || "";
+      const match = h.match(/^#flat-(\d+)$/);
+      if (match) {
+        const found = flats.find(f => String(f.id) === match[1]);
+        if (found) openFlatModal(found);
+      }
+    }
+
+    /* ФИЛЬТРЫ */
+    document.getElementById("searchInput").oninput = e => {
+      filters.search = e.target.value;
+      renderFlats();
+    };
+
+    document.querySelectorAll("#dealChips .chip").forEach(btn => {
+      btn.onclick = () => {
+        filters.deal = btn.dataset.deal;
+        document.querySelectorAll("#dealChips .chip").forEach(b => b.classList.toggle("active", b === btn));
+        renderFlats();
+      };
+    });
+
+    document.querySelectorAll("#roomsChips .chip").forEach(btn => {
+      btn.onclick = () => {
+        filters.rooms = btn.dataset.rooms;
+        document.querySelectorAll("#roomsChips .chip").forEach(b => b.classList.toggle("active", b === btn));
+        renderFlats();
+      };
+    });
+
+    document.querySelectorAll("#priceChips .chip").forEach(btn => {
+      btn.onclick = () => {
+        filters.pricePreset = btn.dataset.price;
+        filters.maxCustom = null;
+        document.getElementById("maxPriceCustom").value = "";
+        document.querySelectorAll("#priceChips .chip").forEach(b => b.classList.toggle("active", b === btn));
+        renderFlats();
+      };
+    });
+
+    document.getElementById("maxPriceCustom").oninput = e => {
+      const val = Number(e.target.value);
+      filters.maxCustom = val > 0 ? val : null;
+      if (filters.maxCustom) {
+        document.querySelectorAll("#priceChips .chip").forEach(b => b.classList.remove("active"));
+      } else {
+        filters.pricePreset = "any";
+        document.querySelector('#priceChips .chip[data-price="any"]').classList.add("active");
+      }
+      renderFlats();
+    };
+
+    document.getElementById("resetFiltersBtn").onclick = () => {
+      filters.search = "";
+      filters.deal = "all";
+      filters.rooms = "all";
+      filters.pricePreset = "any";
+      filters.maxCustom = null;
+      filters.district = "all";
+      document.getElementById("searchInput").value = "";
+      document.getElementById("maxPriceCustom").value = "";
+      document.querySelectorAll("#dealChips .chip").forEach(b => b.classList.toggle("active", b.dataset.deal === "all"));
+      document.querySelectorAll("#roomsChips .chip").forEach(b => b.classList.toggle("active", b.dataset.rooms === "all"));
+      document.querySelectorAll("#priceChips .chip").forEach(b => b.classList.toggle("active", b.dataset.price === "any"));
+      renderDistrictControls();
+      renderFlats();
+    };
+
+    /* АДМИНКА */
+    document.getElementById("adminToggleBtn").onclick = () => {
+      if (isAdmin) {
+        const panel = document.getElementById("adminPanel");
+        panel.classList.toggle("open");
+      } else {
+        document.getElementById("loginModalBackdrop").classList.add("open");
+      }
+    };
+
+    document.getElementById("closeLoginBtn").onclick = () => {
+      document.getElementById("loginModalBackdrop").classList.remove("open");
+    };
+
+    document.getElementById("loginForm").onsubmit = e => {
+      e.preventDefault();
+      const pass = document.getElementById("adminPasswordInput").value;
+      if (pass === ADMIN_PASSWORD) {
+        isAdmin = true;
+        document.getElementById("adminPasswordInput").value = "";
+        document.getElementById("loginModalBackdrop").classList.remove("open");
+        document.getElementById("adminPanel").classList.add("open");
+        showToast("Вход выполнен");
+        renderFlats();
+      } else {
+        showToast("Неверный пароль", true);
+      }
+    };
+
+    document.getElementById("logoutAdminBtn").onclick = () => {
+      isAdmin = false;
+      resetFlatForm();
+      document.getElementById("adminPanel").classList.remove("open");
+      renderFlats();
+      showToast("Вы вышли из админ-режима");
+    };
+
+    document.getElementById("addDistrictBtn").onclick = async () => {
+      const inp = document.getElementById("newDistrictName");
+      const name = inp.value.trim();
+      if (!name) return showToast("Введите название района", true);
+
+      const { error } = await sb.from("districts").insert([{ name }]);
+      if (error) {
+        console.error("Ошибка создания района:", error);
+        return showToast("Не удалось добавить район: " + error.message, true);
+      }
+      inp.value = "";
+      showToast("Район добавлен");
       await loadData();
     };
-    wrap.appendChild(row);
-  });
-}
 
-let editingFlatId = null;
-function openEditFlat(id){
-  const flat = flats.find(f => String(f.id) === String(id));
-  if (!flat) return;
-  editingFlatId = id;
-  populateDistrictSelects();
-  document.getElementById('editFlatDistrictSelect').value = flat.district_id || '';
-  document.getElementById('editFlatTitleInput').value = flat.title;
-  document.getElementById('editFlatPriceInput').value = flat.price;
-  document.getElementById('editFlatAddressInput').value = flat.address;
-  document.getElementById('editFlatDescInput').value = flat.description || '';
-  document.getElementById('editFlatError').textContent = '';
-  document.getElementById('editFlatModal').classList.remove('hidden');
-}
-document.getElementById('closeEditFlatModal').onclick = () => document.getElementById('editFlatModal').classList.add('hidden');
-document.getElementById('saveEditFlatBtn').onclick = async () => {
-  const errEl = document.getElementById('editFlatError');
-  errEl.textContent = '';
-  try{
-    const flat = flats.find(f => String(f.id) === String(editingFlatId));
-    const files = document.getElementById('editFlatPhotosInput').files;
-    let photos = flat.photos || [];
-    if (files.length){
-      const newUrls = await uploadPhotos(files);
-      photos = photos.concat(newUrls);
+    async function deleteDistrict(id) {
+      if (!confirm("Удалить район? Квартиры останутся на сайте без района.")) return;
+      const { error } = await sb.from("districts").delete().eq("id", id);
+      if (error) {
+        console.error("Ошибка удаления района:", error);
+        return showToast("Ошибка удаления: " + error.message, true);
+      }
+      if (String(filters.district) === String(id)) filters.district = "all";
+      showToast("Район удалён");
+      await loadData();
     }
-    const payload = {
-      district_id: document.getElementById('editFlatDistrictSelect').value || null,
-      title: document.getElementById('editFlatTitleInput').value.trim(),
-      price: Number(document.getElementById('editFlatPriceInput').value),
-      address: document.getElementById('editFlatAddressInput').value.trim(),
-      description: document.getElementById('editFlatDescInput').value.trim(),
-      photos
-    };
-    const {error} = await supabase.from('flats').update(payload).eq('id', editingFlatId);
-    if (error) throw error;
-    document.getElementById('editFlatModal').classList.add('hidden');
-    await loadData();
-  }catch(err){
-    errEl.textContent = 'Ошибка: ' + err.message;
-  }
-};
 
-// ---------- Init ----------
-loadData();
-</script>
+    function renderExistingPhotos() {
+      const box = document.getElementById("existingPhotosBox");
+      box.innerHTML = "";
+      editingPhotos.forEach((url, idx) => {
+        const div = document.createElement("div");
+        div.className = "photo-thumb";
+        div.innerHTML = `<img src="${escapeHtml(url)}" alt="Фото" /><button type="button" title="Удалить фото">&times;</button>`;
+        div.querySelector("button").onclick = () => {
+          editingPhotos.splice(idx, 1);
+          renderExistingPhotos();
+        };
+        box.appendChild(div);
+      });
+    }
+
+    function startEditFlat(flat) {
+      editingFlatId = flat.id;
+      editingPhotos = Array.isArray(flat.photos) ? [...flat.photos] : [];
+      document.getElementById("flatFormTitle").textContent = `Редактирование: ${flat.title}`;
+      document.getElementById("saveFlatBtn").textContent = "Сохранить изменения";
+      document.getElementById("cancelEditBtn").style.display = "inline-flex";
+
+      document.getElementById("flatTitle").value = flat.title || "";
+      document.getElementById("flatPriceText").value = flat.price || "";
+      document.getElementById("flatPriceNum").value = flat.price_num ?? "";
+      document.getElementById("flatDealType").value = flat.deal_type || "sale";
+      document.getElementById("flatRooms").value = flat.rooms ? String(flat.rooms) : "";
+      document.getElementById("flatDistrict").value = flat.district_id ? String(flat.district_id) : "";
+      document.getElementById("flatAddress").value = flat.address || "";
+      document.getElementById("flatDescription").value = flat.description || "";
+      document.getElementById("flatPhotosInput").value = "";
+
+      renderExistingPhotos();
+      document.getElementById("adminPanel").classList.add("open");
+      document.getElementById("adminPanel").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function resetFlatForm() {
+      editingFlatId = null;
+      editingPhotos = [];
+      document.getElementById("flatFormTitle").textContent = "Добавить новую квартиру";
+      document.getElementById("saveFlatBtn").textContent = "Сохранить квартиру";
+      document.getElementById("cancelEditBtn").style.display = "none";
+      document.getElementById("flatForm").reset();
+      document.getElementById("existingPhotosBox").innerHTML = "";
+    }
+
+    document.getElementById("cancelEditBtn").onclick = resetFlatForm;
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function uploadSelectedFiles(files) {
+      const uploadedUrls = [];
+      for (const file of files) {
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+        const filePath = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: upErr } = await sb.storage.from(STORAGE_BUCKET).upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false
+        });
+
+        if (!upErr) {
+          const { data: pub } = sb.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+          if (pub?.publicUrl) {
+            uploadedUrls.push(pub.publicUrl);
+            continue;
+          }
+        }
+        // Резервный вариант, если бакет не настроен или недоступен
+        const b64 = await fileToDataUrl(file);
+        uploadedUrls.push(b64);
+      }
+      return uploadedUrls;
+    }
+
+    document.getElementById("flatForm").onsubmit = async e => {
+      e.preventDefault();
+      const saveBtn = document.getElementById("saveFlatBtn");
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Сохранение...";
+
+      try {
+        const title = document.getElementById("flatTitle").value.trim();
+        const priceText = document.getElementById("flatPriceText").value.trim();
+        const priceNumRaw = document.getElementById("flatPriceNum").value.trim();
+        const dealType = document.getElementById("flatDealType").value;
+        const roomsVal = document.getElementById("flatRooms").value;
+        const distVal = document.getElementById("flatDistrict").value;
+        const address = document.getElementById("flatAddress").value.trim();
+        const description = document.getElementById("flatDescription").value.trim();
+        const fileInput = document.getElementById("flatPhotosInput");
+
+        const newPhotos = fileInput.files && fileInput.files.length
+          ? await uploadSelectedFiles(Array.from(fileInput.files))
+          : [];
+
+        const finalPhotos = [...editingPhotos, ...newPhotos];
+        const computedPriceNum = extractNumberFromPrice(priceText, priceNumRaw);
+
+        const payload = {
+          title,
+          price: priceText,
+          price_num: computedPriceNum,
+          deal_type: dealType,
+          rooms: roomsVal ? Number(roomsVal) : null,
+          district_id: distVal ? Number(distVal) : null,
+          address,
+          description: description || null,
+          photos: finalPhotos
+        };
+
+        let res;
+        if (editingFlatId) {
+          res = await sb.from("flats").update(payload).eq("id", editingFlatId).select();
+        } else {
+          res = await sb.from("flats").insert([payload]).select();
+        }
+
+        if (res.error) {
+          console.error("Ошибка сохранения квартиры:", res.error);
+          showToast("Ошибка сохранения: " + res.error.message, true);
+          return;
+        }
+
+        showToast(editingFlatId ? "Квартира обновлена" : "Квартира добавлена на сайт");
+        resetFlatForm();
+        await loadData();
+      } catch (err) {
+        console.error(err);
+        showToast("Сбой при сохранении квартиры", true);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = editingFlatId ? "Сохранить изменения" : "Сохранить квартиру";
+      }
+    };
+
+    async function deleteFlat(id) {
+      if (!confirm("Удалить эту квартиру?")) return;
+      const { error } = await sb.from("flats").delete().eq("id", id);
+      if (error) {
+        console.error("Ошибка удаления квартиры:", error);
+        return showToast("Ошибка удаления: " + error.message, true);
+      }
+      if (String(editingFlatId) === String(id)) resetFlatForm();
+      showToast("Квартира удалена");
+      await loadData();
+    }
+
+    window.addEventListener("hashchange", checkHashFlat);
+    loadData();
+  </script>
 </body>
 </html>
