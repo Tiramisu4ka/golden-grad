@@ -63,6 +63,8 @@
       align-items: center;
       gap: 12px;
       text-decoration: none;
+      cursor: pointer;
+      user-select: none;
     }
 
     .logo-shimmer {
@@ -129,12 +131,6 @@
       color: #fff;
     }
 
-    .btn-admin {
-      background: #fff;
-      color: var(--text);
-      border: 1px solid rgba(156, 114, 20, 0.25);
-    }
-
     .btn-gold {
       background: linear-gradient(135deg, #e5ba45, #c79520);
       color: #1c1607;
@@ -172,6 +168,26 @@
       font-weight: 700;
       padding: 1px 6px;
       border-radius: 999px;
+    }
+
+    .pencil-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(156, 114, 20, 0.35);
+      background: #fff;
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .pencil-btn:hover {
+      background: var(--gold-light);
+      transform: scale(1.06);
     }
 
     .filters-panel {
@@ -264,7 +280,7 @@
     }
 
     .price-custom-input {
-      width: 240px;
+      width: 250px;
       max-width: 100%;
       padding: 9px 12px;
       border-radius: 11px;
@@ -396,26 +412,13 @@
       font-weight: 600;
     }
 
-    .admin-box {
-      background: var(--glass);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      padding: 18px;
-      margin-bottom: 22px;
-      display: none;
-    }
-
-    .admin-box.open { display: block; }
-
     .admin-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
-      margin-top: 12px;
     }
 
-    @media (max-width: 720px) {
+    @media (max-width: 640px) {
       .admin-grid { grid-template-columns: 1fr; }
     }
 
@@ -433,18 +436,18 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 14px;
     }
 
     .district-pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       background: #fff;
       border: 1px solid rgba(156, 114, 20, 0.25);
-      padding: 6px 10px;
+      padding: 7px 12px;
       border-radius: 999px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
     }
 
@@ -453,7 +456,9 @@
       background: transparent;
       color: var(--danger);
       cursor: pointer;
+      font-size: 15px;
       font-weight: 800;
+      line-height: 1;
     }
 
     .existing-photos {
@@ -510,7 +515,7 @@
     .modal {
       background: #fffdf7;
       border-radius: 20px;
-      max-width: 640px;
+      max-width: 660px;
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
@@ -522,6 +527,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       margin-bottom: 14px;
     }
 
@@ -533,6 +539,7 @@
       border-radius: 50%;
       font-size: 18px;
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     .modal-gallery {
@@ -576,103 +583,19 @@
 <body>
   <header>
     <div class="header-inner">
-      <a href="#top" class="brand" id="resetHome">
+      <div class="brand" id="logoAdminTrigger" title="GoldenGrad">
         <div class="logo-shimmer" aria-label="GoldenGrad"></div>
         <span class="brand-title">GOLDEN GRAD</span>
-      </a>
+      </div>
       <div class="top-actions">
         <a href="#" id="generalWaBtn" target="_blank" class="btn btn-wa">WhatsApp</a>
-        <button type="button" id="adminToggleBtn" class="btn btn-admin">✏️ Админ</button>
+        <button type="button" id="openAddFlatBtn" class="btn btn-gold" style="display:none;">+ Добавить квартиру</button>
+        <button type="button" id="logoutAdminBtn" class="btn btn-ghost btn-sm" style="display:none;">Выйти</button>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <!-- АДМИН-ПАНЕЛЬ -->
-    <section id="adminPanel" class="admin-box">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <h2 id="flatFormTitle" style="font-size:17px;">Добавить новую квартиру</h2>
-        <div style="display:flex; gap:8px;">
-          <button type="button" id="cancelEditBtn" class="btn btn-ghost btn-sm" style="display:none;">Отменить редактирование</button>
-          <button type="button" id="logoutAdminBtn" class="btn btn-ghost btn-sm">Выйти</button>
-        </div>
-      </div>
-
-      <form id="flatForm" class="admin-grid">
-        <div>
-          <label class="field-label" for="flatTitle">Название / ЖК *</label>
-          <input id="flatTitle" type="text" class="input" placeholder="Например: Светлая квартира в центре" required />
-        </div>
-
-        <div>
-          <label class="field-label" for="flatPriceText">Цена (текстом для карточки) *</label>
-          <input id="flatPriceText" type="text" class="input" placeholder="Например: 38 000 000 ₸ или 250 000 ₸/мес" required />
-        </div>
-
-        <div>
-          <label class="field-label" for="flatPriceNum">Цена числом для фильтра (необязательно)</label>
-          <input id="flatPriceNum" type="number" class="input" placeholder="Например: 38000000 (если пусто — возьмётся из цены)" />
-        </div>
-
-        <div>
-          <label class="field-label" for="flatDealType">Тип сделки</label>
-          <select id="flatDealType" class="select">
-            <option value="sale">Постоянная покупка (Продажа)</option>
-            <option value="rent">В аренду (Сдаётся)</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="field-label" for="flatRooms">Комнатность</label>
-          <select id="flatRooms" class="select">
-            <option value="">Не указано</option>
-            <option value="1">1-комнатная</option>
-            <option value="2">2-комнатная</option>
-            <option value="3">3-комнатная</option>
-            <option value="4">4-комнатная</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="field-label" for="flatDistrict">Район (необязательно)</label>
-          <select id="flatDistrict" class="select">
-            <option value="">Без района (не указан)</option>
-          </select>
-        </div>
-
-        <div class="full-col">
-          <label class="field-label" for="flatAddress">Адрес *</label>
-          <input id="flatAddress" type="text" class="input" placeholder="Улица, дом" required />
-        </div>
-
-        <div class="full-col">
-          <label class="field-label" for="flatDescription">Описание</label>
-          <textarea id="flatDescription" class="textarea" placeholder="Этаж, площадь, ремонт, условия аренды или покупки..."></textarea>
-        </div>
-
-        <div class="full-col">
-          <label class="field-label" for="flatPhotosInput">Фотографии квартиры</label>
-          <input id="flatPhotosInput" type="file" accept="image/*" multiple class="input" />
-          <div id="existingPhotosBox" class="existing-photos"></div>
-        </div>
-
-        <div class="full-col" style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button type="submit" id="saveFlatBtn" class="btn btn-gold">Сохранить квартиру</button>
-        </div>
-      </form>
-
-      <hr style="margin: 20px 0; border: none; border-top: 1px solid rgba(156,114,20,0.2);" />
-
-      <div>
-        <h3 style="font-size:15px; margin-bottom:8px;">Управление районами (необязательный фильтр)</h3>
-        <div style="display:flex; gap:8px; flex-wrap:wrap; max-width:440px;">
-          <input id="newDistrictName" type="text" class="input" placeholder="Название нового района" style="flex:1; min-width:180px;" />
-          <button type="button" id="addDistrictBtn" class="btn btn-gold btn-sm">Добавить район</button>
-        </div>
-        <div id="adminDistrictsList" class="districts-manage"></div>
-      </div>
-    </section>
-
     <!-- ПОИСК И ВЫДВИЖНЫЕ ФИЛЬТРЫ -->
     <section class="filters-panel">
       <div class="search-row">
@@ -708,7 +631,7 @@
           <input id="maxPriceCustom" type="number" min="0" class="price-custom-input" placeholder="Введите сумму (например 35000000)" />
         </div>
 
-        <!-- Районы -->
+        <!-- Районы + карандашик в админке -->
         <div class="filter-group" id="districtChips">
           <span class="filter-label">Район:</span>
           <button type="button" class="chip active" data-district="all">Все районы</button>
@@ -727,6 +650,101 @@
 
   <footer>© 2026 GoldenGrad — недвижимость</footer>
 
+  <!-- МОДАЛКА ДОБАВЛЕНИЯ / РЕДАКТИРОВАНИЯ КВАРТИРЫ -->
+  <div id="flatFormModalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="flatFormTitle" style="font-size:17px;">Добавить новую квартиру</h3>
+        <button type="button" id="closeFlatFormModalBtn" class="modal-close">&times;</button>
+      </div>
+
+      <form id="flatForm" class="admin-grid">
+        <div>
+          <label class="field-label" for="flatTitle">Название / ЖК *</label>
+          <input id="flatTitle" type="text" class="input" placeholder="Например: Светлая квартира в центре" required />
+        </div>
+
+        <div>
+          <label class="field-label" for="flatPriceText">Цена (текстом для карточки) *</label>
+          <input id="flatPriceText" type="text" class="input" placeholder="Например: 38 000 000 ₸ или 250 000 ₸/мес" required />
+        </div>
+
+        <div>
+          <label class="field-label" for="flatPriceNum">Цена числом для фильтра (необязательно)</label>
+          <input id="flatPriceNum" type="number" class="input" placeholder="Например: 38000000" />
+        </div>
+
+        <div>
+          <label class="field-label" for="flatDealType">Тип сделки</label>
+          <select id="flatDealType" class="select">
+            <option value="sale">Постоянная покупка (Продажа)</option>
+            <option value="rent">В аренду (Сдаётся)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="field-label" for="flatRooms">Комнатность</label>
+          <select id="flatRooms" class="select">
+            <option value="">Не указано</option>
+            <option value="1">1-комнатная</option>
+            <option value="2">2-комнатная</option>
+            <option value="3">3-комнатная</option>
+            <option value="4">4-комнатная</option>
+          </select>
+        </div>
+
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <label class="field-label" for="flatDistrict" style="margin-bottom:0;">Район (необязательно)</label>
+            <button type="button" id="inlineManageDistrictsBtn" class="pencil-btn" style="width:22px; height:22px; font-size:11px;" title="Настроить список районов">✏️</button>
+          </div>
+          <select id="flatDistrict" class="select">
+            <option value="">Без района (не указан)</option>
+          </select>
+        </div>
+
+        <div class="full-col">
+          <label class="field-label" for="flatAddress">Адрес *</label>
+          <input id="flatAddress" type="text" class="input" placeholder="Улица, дом" required />
+        </div>
+
+        <div class="full-col">
+          <label class="field-label" for="flatDescription">Описание</label>
+          <textarea id="flatDescription" class="textarea" placeholder="Этаж, площадь, ремонт, условия аренды или покупки..."></textarea>
+        </div>
+
+        <div class="full-col">
+          <label class="field-label" for="flatPhotosInput">Фотографии квартиры</label>
+          <input id="flatPhotosInput" type="file" accept="image/*" multiple class="input" />
+          <div id="existingPhotosBox" class="existing-photos"></div>
+        </div>
+
+        <div class="full-col" style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; margin-top:4px;">
+          <button type="button" id="cancelFlatFormBtn" class="btn btn-ghost">Отмена</button>
+          <button type="submit" id="saveFlatBtn" class="btn btn-gold">Сохранить квартиру</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА УПРАВЛЕНИЯ РАЙОНАМИ (ПО КАРАНДАШИКУ У ФИЛЬТРОВ) -->
+  <div id="districtsModalBackdrop" class="modal-backdrop">
+    <div class="modal" style="max-width:460px;">
+      <div class="modal-header">
+        <h3 style="font-size:17px;">Настройка районов (фильтры)</h3>
+        <button type="button" id="closeDistrictsModalBtn" class="modal-close">&times;</button>
+      </div>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">
+        Добавьте нужные районы — они сразу появятся в фильтрах поиска и в списке при добавлении квартиры.
+      </p>
+      <div style="display:flex; gap:8px;">
+        <input id="newDistrictName" type="text" class="input" placeholder="Название района (например: Бостандыкский)" />
+        <button type="button" id="addDistrictBtn" class="btn btn-gold">Добавить</button>
+      </div>
+      <div id="adminDistrictsList" class="districts-manage"></div>
+    </div>
+  </div>
+
   <!-- МОДАЛКА ПРОСМОТРА КВАРТИРЫ -->
   <div id="flatModalBackdrop" class="modal-backdrop">
     <div class="modal">
@@ -742,11 +760,11 @@
     </div>
   </div>
 
-  <!-- МОДАЛКА ВХОДА В АДМИНКУ -->
+  <!-- МОДАЛКА ВХОДА В АДМИНКУ (ПО НАЖАТИЮ НА ЛОГОТИП) -->
   <div id="loginModalBackdrop" class="modal-backdrop">
     <div class="modal" style="max-width:380px;">
       <div class="modal-header">
-        <h3 style="font-size:17px;">Вход в панель администратора</h3>
+        <h3 style="font-size:17px;">Вход для администратора</h3>
         <button type="button" id="closeLoginBtn" class="modal-close">&times;</button>
       </div>
       <form id="loginForm" style="display:flex; flex-direction:column; gap:12px;">
@@ -820,6 +838,13 @@
     }
 
     document.getElementById("generalWaBtn").href = buildWaUrl(null);
+
+    function syncAdminUi() {
+      document.getElementById("openAddFlatBtn").style.display = isAdmin ? "inline-flex" : "none";
+      document.getElementById("logoutAdminBtn").style.display = isAdmin ? "inline-flex" : "none";
+      renderDistrictControls();
+      renderFlats();
+    }
 
     function updateFilterButtonState() {
       let count = 0;
@@ -914,6 +939,18 @@
         chipsWrap.appendChild(btn);
       });
 
+      if (isAdmin) {
+        const editFilterBtn = document.createElement("button");
+        editFilterBtn.type = "button";
+        editFilterBtn.className = "pencil-btn";
+        editFilterBtn.title = "Добавить или удалить районы в фильтрах";
+        editFilterBtn.textContent = "✏️";
+        editFilterBtn.onclick = () => {
+          document.getElementById("districtsModalBackdrop").classList.add("open");
+        };
+        chipsWrap.appendChild(editFilterBtn);
+      }
+
       const selectEl = document.getElementById("flatDistrict");
       const prevVal = selectEl.value;
       selectEl.innerHTML = `<option value="">Без района (необязательно)</option>`;
@@ -927,13 +964,17 @@
 
       const adminList = document.getElementById("adminDistrictsList");
       adminList.innerHTML = "";
-      districts.forEach(d => {
-        const pill = document.createElement("span");
-        pill.className = "district-pill";
-        pill.innerHTML = `<span>${escapeHtml(d.name)}</span><button type="button" title="Удалить">&times;</button>`;
-        pill.querySelector("button").onclick = () => deleteDistrict(d.id);
-        adminList.appendChild(pill);
-      });
+      if (!districts.length) {
+        adminList.innerHTML = `<span style="font-size:12px; color:var(--muted);">Пока нет добавленных районов</span>`;
+      } else {
+        districts.forEach(d => {
+          const pill = document.createElement("span");
+          pill.className = "district-pill";
+          pill.innerHTML = `<span>${escapeHtml(d.name)}</span><button type="button" title="Удалить">&times;</button>`;
+          pill.querySelector("button").onclick = () => deleteDistrict(d.id);
+          adminList.appendChild(pill);
+        });
+      }
     }
 
     function escapeHtml(str) {
@@ -1027,7 +1068,7 @@
         card.querySelector(".card-title").onclick = () => openFlatModal(flat);
 
         if (isAdmin) {
-          card.querySelector(".edit-flat-btn").onclick = () => startEditFlat(flat);
+          card.querySelector(".edit-flat-btn").onclick = () => openEditFlatModal(flat);
           card.querySelector(".del-flat-btn").onclick = () => deleteFlat(flat.id);
         }
 
@@ -1126,18 +1167,25 @@
       renderFlats();
     };
 
-    /* АДМИНКА */
-    document.getElementById("adminToggleBtn").onclick = () => {
-      if (isAdmin) {
-        const panel = document.getElementById("adminPanel");
-        panel.classList.toggle("open");
-      } else {
+    /* ВХОД В АДМИНКУ ПО НАЖАТИЮ НА ЛОГОТИП */
+    document.getElementById("logoAdminTrigger").onclick = () => {
+      if (!isAdmin) {
         document.getElementById("loginModalBackdrop").classList.add("open");
+        setTimeout(() => document.getElementById("adminPasswordInput").focus(), 50);
+      } else {
+        document.getElementById("resetFiltersBtn").click();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     };
 
     document.getElementById("closeLoginBtn").onclick = () => {
       document.getElementById("loginModalBackdrop").classList.remove("open");
+    };
+
+    document.getElementById("loginModalBackdrop").onclick = e => {
+      if (e.target.id === "loginModalBackdrop") {
+        document.getElementById("loginModalBackdrop").classList.remove("open");
+      }
     };
 
     document.getElementById("loginForm").onsubmit = e => {
@@ -1147,9 +1195,8 @@
         isAdmin = true;
         document.getElementById("adminPasswordInput").value = "";
         document.getElementById("loginModalBackdrop").classList.remove("open");
-        document.getElementById("adminPanel").classList.add("open");
-        showToast("Вход выполнен");
-        renderFlats();
+        syncAdminUi();
+        showToast("Режим администратора включён");
       } else {
         showToast("Неверный пароль", true);
       }
@@ -1157,10 +1204,25 @@
 
     document.getElementById("logoutAdminBtn").onclick = () => {
       isAdmin = false;
-      resetFlatForm();
-      document.getElementById("adminPanel").classList.remove("open");
-      renderFlats();
+      closeFlatFormModal();
+      document.getElementById("districtsModalBackdrop").classList.remove("open");
+      syncAdminUi();
       showToast("Вы вышли из админ-режима");
+    };
+
+    /* НАСТРОЙКА РАЙОНОВ ПО КАРАНДАШИКУ */
+    document.getElementById("inlineManageDistrictsBtn").onclick = () => {
+      document.getElementById("districtsModalBackdrop").classList.add("open");
+    };
+
+    document.getElementById("closeDistrictsModalBtn").onclick = () => {
+      document.getElementById("districtsModalBackdrop").classList.remove("open");
+    };
+
+    document.getElementById("districtsModalBackdrop").onclick = e => {
+      if (e.target.id === "districtsModalBackdrop") {
+        document.getElementById("districtsModalBackdrop").classList.remove("open");
+      }
     };
 
     document.getElementById("addDistrictBtn").onclick = async () => {
@@ -1190,6 +1252,7 @@
       await loadData();
     }
 
+    /* ДОБАВЛЕНИЕ И РЕДАКТИРОВАНИЕ КВАРТИРЫ В МОДАЛКЕ */
     function renderExistingPhotos() {
       const box = document.getElementById("existingPhotosBox");
       box.innerHTML = "";
@@ -1205,12 +1268,21 @@
       });
     }
 
-    function startEditFlat(flat) {
+    function openAddFlatModal() {
+      editingFlatId = null;
+      editingPhotos = [];
+      document.getElementById("flatFormTitle").textContent = "Добавить новую квартиру";
+      document.getElementById("saveFlatBtn").textContent = "Сохранить квартиру";
+      document.getElementById("flatForm").reset();
+      document.getElementById("existingPhotosBox").innerHTML = "";
+      document.getElementById("flatFormModalBackdrop").classList.add("open");
+    }
+
+    function openEditFlatModal(flat) {
       editingFlatId = flat.id;
       editingPhotos = Array.isArray(flat.photos) ? [...flat.photos] : [];
       document.getElementById("flatFormTitle").textContent = `Редактирование: ${flat.title}`;
       document.getElementById("saveFlatBtn").textContent = "Сохранить изменения";
-      document.getElementById("cancelEditBtn").style.display = "inline-flex";
 
       document.getElementById("flatTitle").value = flat.title || "";
       document.getElementById("flatPriceText").value = flat.price || "";
@@ -1223,21 +1295,23 @@
       document.getElementById("flatPhotosInput").value = "";
 
       renderExistingPhotos();
-      document.getElementById("adminPanel").classList.add("open");
-      document.getElementById("adminPanel").scrollIntoView({ behavior: "smooth" });
+      document.getElementById("flatFormModalBackdrop").classList.add("open");
     }
 
-    function resetFlatForm() {
+    function closeFlatFormModal() {
       editingFlatId = null;
       editingPhotos = [];
-      document.getElementById("flatFormTitle").textContent = "Добавить новую квартиру";
-      document.getElementById("saveFlatBtn").textContent = "Сохранить квартиру";
-      document.getElementById("cancelEditBtn").style.display = "none";
       document.getElementById("flatForm").reset();
       document.getElementById("existingPhotosBox").innerHTML = "";
+      document.getElementById("flatFormModalBackdrop").classList.remove("open");
     }
 
-    document.getElementById("cancelEditBtn").onclick = resetFlatForm;
+    document.getElementById("openAddFlatBtn").onclick = openAddFlatModal;
+    document.getElementById("closeFlatFormModalBtn").onclick = closeFlatFormModal;
+    document.getElementById("cancelFlatFormBtn").onclick = closeFlatFormModal;
+    document.getElementById("flatFormModalBackdrop").onclick = e => {
+      if (e.target.id === "flatFormModalBackdrop") closeFlatFormModal();
+    };
 
     function fileToDataUrl(file) {
       return new Promise((resolve, reject) => {
@@ -1320,8 +1394,9 @@
           return;
         }
 
-        showToast(editingFlatId ? "Квартира обновлена" : "Квартира добавлена на сайт");
-        resetFlatForm();
+        const wasEditing = Boolean(editingFlatId);
+        closeFlatFormModal();
+        showToast(wasEditing ? "Квартира обновлена" : "Квартира добавлена на сайт");
         await loadData();
       } catch (err) {
         console.error(err);
@@ -1339,7 +1414,7 @@
         console.error("Ошибка удаления квартиры:", error);
         return showToast("Ошибка удаления: " + error.message, true);
       }
-      if (String(editingFlatId) === String(id)) resetFlatForm();
+      if (String(editingFlatId) === String(id)) closeFlatFormModal();
       showToast("Квартира удалена");
       await loadData();
     }
